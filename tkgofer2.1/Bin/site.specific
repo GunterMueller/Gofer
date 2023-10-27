@@ -1,0 +1,17 @@
+#!/bin/sh
+#---------------------------------------------------------------------
+#- TkGofer v. 2.0
+#- Ton Vullinghs, Koen Claessen, July 1997
+#---------------------------------------------------------------------
+#- site specific settings for tkgofer
+
+#- Place environment definitions, etc. here:
+
+
+#- Leave this last line!
+
+exec $*
+
+#---------------------------------------------------------------------
+#- the end.
+

@@ -1,0 +1,18 @@
+Install for TkGofer, version 2.0. July 1997.
+
+usage: tkgofer.install [ options ... ]
+       where options include:
+
+       -help         to display this message.
+       -?            to display this message.
+ 
+       -make         to do the make part of the installation.
+       -install      to put the executable at the right place.
+       -preludes     to create the preludes in the directory Preludes.
+       -clean        to remove all created files.
+       -nothing      to only check variables and create files.
+
+       Before running this script, set the variables in this file
+       to their right values.
+
+       No option specified defaults to -make -install -preludes.

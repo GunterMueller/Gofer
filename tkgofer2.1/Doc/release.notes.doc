@@ -1,0 +1,231 @@
+----------------------------------------------------------------
+-- Release Notes for TkGofer Version 2.0
+-- Koen Claessen, Ton Vullinghs, 1997
+----------------------------------------------------------------
+
+----------------------------------------------------------------
+-- CONTENTS
+
+  I.   CHANGES
+  II.  EXTENSIONS
+  III. KNOWN BUGS
+  IV.  FIXES OF EARLIER BUGS
+
+----------------------------------------------------------------
+-- I. CHANGES
+
+Changes made in TkGofer Version 2.0 compared to TkGofer
+Version 1.0b.
+
+1. In general:
+
+  - There are higher versions of Tcl and Tk required (7.6 and 4.2).
+
+  - There is a different, faster internal implementation of the GUI
+    Monad and the event handling. This is also done because of the
+    adding of concurrency.
+    
+  - We restructured the directory structure. In particular, there
+    are several preludes eacht containing a subset of the functionality
+    of TkGofer, represented by modules.
+
+2. Libraries:
+
+  - The type and functions State, newState, writeState, readState,
+    and modState disappeared. Instead there is a widget Clipboard, with
+    the construction function clipboard. A Clipboard is an instance of
+    HasInput.
+
+  - The Gofer type Dialogue and the functions working on it
+    disappeared.
+
+  - The function doneM is changed to done.
+
+  - The widget hierarchy is flatter now. The widget hierarchy of
+    TkGofer 1.0 was based on the Tcl/Tk widgets. The old hierarchy 
+    was often too complex for writing new widgets.
+
+  - There is a new class in the hierarchy:
+
+      class Widget w => HasFocus w where
+        focus     :: w -> GUI ()
+        takeFocus :: Bool -> Conf w
+
+  - The class Position no longer exists.
+
+  - The function putEndTag is reimplemented (it uses the Tcl
+    procedure insTag)
+
+  - The old function 
+
+      tk_addToCallBack :: ([String] -> GUI ()) -> GUI Int      
+
+    does no longer exist. The new function to add a callback
+    to the callback list is:
+
+      tk_addCallBack :: TkWidId -> ([String] -> GUI ()) -> GUI HeapPtr
+
+----------------------------------------------------------------
+-- II. EXTENSIONS
+
+1. Extensions made in TkGofer Version 2.0 compared to TkGofer
+   Version 1.0.
+  
+  - There is a new module containing functions and types that
+    deal with a (limited form) of concurrency. The functions
+    and control structures are based on Concurrent Haskell.
+    New features are for example:
+    
+      fork :: GUI a -> GUI ()
+      
+      type MVar; newMVar, takeMVar, putMVar
+      type CVar; newCVar, takeCVar, putCVar
+
+    The name of the module is concurrent.gs. For a demonstration see
+    Examples/Concurrency
+
+  - There is a new module containing functions to deal with file and
+    user IO. This library is based on the library provided by Hugs.
+    New features include:
+    
+      readFile, writeFile, appendFile,
+      openFile, hPutStr, hGetString, hSeek
+
+    The name of the module is io.gs.
+  
+  - There is a new module containing functions to handle
+    time, timer-events, etc. New features are:
+    
+      after    :: Int -> GUI a -> GUI ()
+      delay    :: Int -> GUI ()
+      every    :: Int -> GUI a -> GUI ()
+      getTicks :: GUI Int
+    
+    The name of the module is time.gs.
+    
+  - The tkgofer script has a lot of extra options, to specify what
+    prelude to use and more. Type tkgofer -help to see these options.
+    
+  - Adding new configuration options is now easier to do using
+    the function:
+
+      myConf :: Widget w => (w -> GUI a) -> Conf w
+
+    For an example see the `graphics.gs' example in the 
+    Examples/SmallExamples directory.
+
+  - A couple of new event definitions are included:
+
+      mouseMotion, enterWidget, leaveWidget, destroyWidget
+
+  - Three new widgets were added:
+
+      carc, cpolygon, cpicture
+
+    carc supports the Tk canvas object arc, cpolygon the polygon
+    object and cpicture is a combination of Tk-pictures and 
+    images. It can be to display a GIF picture in a canvas.
+
+    For these widgets, three new configuration options were added:
+   
+      startAngle, extentAngle, image 
+
+  - There is now primitive support for embedded windows. The function
+    
+      ewindow :: HasEmbeddedWindow a 
+              => (Int,Int) -> [Conf Frame] -> a -> GUI Window
+
+    places as embedded window in an editor or on a canvas. The 
+    (Int,Int) parameter corresponds to position of the embedded
+    window. For an example, see the file ewindow.gs in the
+    Examples/SmallExamples directory.
+
+2. Extensions made for TkGofer to the standard Gofer sources
+   (Gofer version 230a):
+
+  - file: prelude.h
+  
+    Added  `#define TK_GOFER   1' to include the
+    TkGofer sources in other file.
+
+    The LARGE_GOFER constants NUM_TYCON and NUM_CLASSES are
+    set to `extra large' values 200 and 80.
+
+    Variable TK_MAX denotes the maximum number of bytes
+    that can be transfered between Gofer and Tk in
+    one argument.
+
+
+  - file: gofer.c
+
+    * Added command line toggle `x` to switch between
+      tk-debug mode and standard mode. In tk-debug
+      mode, Gofer will display on stderr the exact
+      code of the generated Tcl scripts. 
+      Useful for debugging your new Tcl-Gofer commands.
+
+    * Extended the procedures: interpreter and sigHandler
+   
+      These procedures now call the procedure c_quit_tcl
+      to destroy the Tcl interpreter (see file tkgofer.c)
+  
+  - file: prims.c
+
+    * Five new primitives are defined:
+
+        primInitTcl;     -- initialize Tcl
+        primRunTcl;      -- start Tk eventloop
+        primExecuteTcl;  -- evaluate Tcl script
+        primGetTcl;      -- return event
+        primSetVar;      -- write variable
+
+      All these primitives are only defined if the
+      IO_MONAD flag is defined.
+    
+      The actual implementation of these primitives
+      can be found in the file tkgofer.c
+
+    * A few help-functions are defined to convert between
+      Gofer and C strings. Special thanks to Joost van Dijk
+      for providing this code in the xgofer sources :)
+
+    * The function evalName2 has been changed. There is no check
+      anymore if a character is really a character.
+      
+  - file: tkgofer.c
+   
+    This file contains the implementation of the
+    five primitives and an additional Tcl-command.
+
+----------------------------------------------------------------
+-- III. KNOWN BUGS
+
+These are the known bugs that are currently in the system:
+
+  - The delay function from the time module can only be used inside
+    forked processes. Otherwise the whole program will be blocked.
+  
+  - If a subprocess does do a lot of work, but never communicates with Tk,
+    the graphical part of the program doesn't react. Therefore, most forked
+    loops should contain a call to the function `updateTask'. This function
+    gives Tk time to do what it should do.
+
+  - In the TkGofer Windows 95/NT version, control C doesn't do what it is
+    supposed to do.
+    
+The following is not really a bug, but a desirable thing that
+sadly does not work:
+
+  - TkGofer does only work in combination with the Gofer interpreter.
+    We can't get the Gofer compiler to work.
+
+----------------------------------------------------------------
+-- IV. FIXES OF EARLIER BUGS
+
+These are fixes to earlier bugs:
+
+  - Control C works now in all cases. At least, on Unix machines.
+    Tk will never crash due to a control C anymore.
+
+----------------------------------------------------------------
+-- the end.

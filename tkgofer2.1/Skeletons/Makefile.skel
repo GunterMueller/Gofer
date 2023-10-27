@@ -1,0 +1,84 @@
+# ----------------------------------------------------------------------
+# TKGOFER Makefile
+# TkGofer Version 2.0
+# ----------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
+# ADAPT THE FOLLOWING TO YOUR LOCAL SETTINGS
+# ----------------------------------------------------------------------
+
+INSTALLDIR	= @InstallDir@
+
+INCDIRS		= @IncFlags@
+LIBDIRS		= @LibFlags@ 
+LDFLAGS    	= @LinkFlags@
+
+# ----------------------------------------------------------------------
+# STANDARD GOFER SETTINGS 
+# ----------------------------------------------------------------------
+
+.SUFFIXES	: .y .c .h .o .gs
+OBJECTS		= storage.o input.o static.o type.o compiler.o
+IOBJECTS	= gofer.o builtin.o  machine.o output.o $(OBJECTS)
+
+CC		= @Compiler@ $(INCDIRS) 
+CFLAGS		= @CompilerFlags@
+
+OPTFLAGS	= -O
+OPT1		=
+
+# ----------------------------------------------------------------------
+# Options
+# ----------------------------------------------------------------------
+
+all		: tkgofer
+
+tkgofer		: $(IOBJECTS)
+		  $(CC) $(CFLAGS) $(OPTFLAGS) $(IOBJECTS) \
+			$(LIBDIRS) -o tkgofer.exe $(LDFLAGS)
+		  strip tkgofer.exe
+
+.c.o		:
+		  $(CC) -c $(CFLAGS) $(OPTFLAGS) $<
+
+clean		:
+		  rm *.o $(TESTS)
+
+.gs		:
+		  ./gofc $*.gs
+		  $(CC) $(OPTFLAGS) $*.c runtime.o -o $* $(LDFLAGS)
+		  rm $*.c
+		  strip $*
+
+.gp		:
+		  ./gofc + $*.gp
+		  $(CC) $(OPTFLAGS) $*.c runtime.o -o $* $(LDFLAGS)
+		  rm $*.c
+		  strip $*
+
+parser.c	: parser.y
+		  yacc parser.y
+		  mv y.tab.c parser.c
+
+gofer.o		: prelude.h storage.h connect.h errors.h \
+		  command.h machdep.c commonui.c
+gofc.o		: prelude.h storage.h connect.h errors.h \
+		  command.h machdep.c commonui.c output.c 
+runtime.o	: prelude.h gofc.h machdep.c markscan.c twospace.c
+storage.o	: prelude.h storage.h connect.h errors.h
+input.o		: prelude.h storage.h connect.h errors.h parser.c command.h
+static.o	: prelude.h storage.h connect.h errors.h scc.c
+type.o		: prelude.h storage.h connect.h errors.h preds.c kind.c subst.c
+output.o	: prelude.h storage.h connect.h errors.h
+compiler.o	: prelude.h storage.h connect.h errors.h
+		  $(CC) -c $(OPT1) $(CFLAGS) compiler.c
+machine.o	: prelude.h storage.h connect.h errors.h
+cmachine.o	: prelude.h storage.h connect.h errors.h
+		  $(CC) -c $(OPT1) $(CFLAGS) cmachine.c
+builtin.o	: prelude.h storage.h connect.h errors.h prims.c tkgofer.c
+cbuiltin.o	: prelude.h storage.h connect.h errors.h prims.c 
+
+# ----------------------------------------------------------------------
+# The end.
+# ----------------------------------------------------------------------
+

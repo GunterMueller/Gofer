@@ -1,0 +1,37 @@
+TkGofer, version 2.0. July 1997.
+
+usage: tkgofer [ options ... ]
+       where options include:
+
+       -help         to display this message.
+       -?            to display this message.
+ 
+       -all          to use a prelude with all features.
+       -mini         to use a minimal prelude.
+       -conc         to use only concurrency.
+       -noconc       to use everything but concurrency.
+       -std          to use only the standard features.
+       -prel <file>  to use <file> as the prelude.
+
+       -h<num>       set heap size to <num>.
+       -p<str>       set prompt string to <str>.
+       -r<str>       set repeat last expression string to <str>.
+
+       Gofer Toggles:
+       groups begin with +/- to turn options on/off resp.
+
+       s             Print no. reductions/cells after eval
+       t             Print type after evaluation
+       d             Show dictionary values in output exprs
+       f             Terminate evaluation on first error
+       g             Print no. cells recovered after gc
+       c             Test conformality for pattern bindings
+       l             Literate scripts as default
+       e             Warn about errors in literate scripts
+       i             Apply fromInteger to integer literals
+       o             Optimise use of (&&) and (||)
+       u             Catch ambiguously typed top-level vars
+       .             Print dots to show progress
+       w             Always show which files loaded
+       1             Overload singleton list notation
+       k             Show kind errors in full

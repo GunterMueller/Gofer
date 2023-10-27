@@ -1,0 +1,95 @@
+#!/bin/sh
+#---------------------------------------------------------------------
+#- TkGofer v. 2.0
+#- Ton Vullinghs, Koen Claessen, July 1997
+#---------------------------------------------------------------------
+#- tkgofer
+
+ROOT="/home/joachim/TkGofer2.1"
+
+#---------------------------------------------------------------------
+#- Variables
+
+Prelude="$TKPRELUDE"
+PreludeDir="$ROOT/Preludes"
+BinDir="$ROOT/Bin"
+TclDir="$ROOT/Tcl"
+HelpDir="$ROOT/Doc"
+Args=""
+
+#---------------------------------------------------------------------
+#- Help?
+
+if [ "$1" = "-?" -o "$1" = "-help" ]
+then
+  more "$HelpDir/tkgofer.help"
+  exit
+fi
+
+#---------------------------------------------------------------------
+#- Options
+
+while [ "$1" != "" ]
+do
+  if [ "$1" = "-all"    \
+    -o "$1" = "-mini"   \
+    -o "$1" = "-conc"   \
+    -o "$1" = "-noconc" \
+    -o "$1" = "-std"    \
+     ]
+  then
+    Prelude="$PreludeDir/tk.prelude$1"
+  else
+    if [ "$1" = "-prel" ]
+    then
+      Prelude="$2"
+      shift
+    else
+      Args="$Args $1"
+    fi
+  fi
+  shift
+done
+
+if [ "$Prelude" = "" ]
+then
+  Prelude="$PreludeDir/tk.prelude-all"
+fi
+
+#---------------------------------------------------------------------
+#- Message
+
+echo "=== TkGofer v2.0 ==="
+
+head -10 "$Prelude" \
+  | grep 'this prelude uses:' \
+  | sed 's/-- this prelude uses/(with modules/' \
+  | sed 's/.gs --/)/' \
+  | sed 's/.gs/,/g' \
+  | sed 's/--/-- )/g'
+
+#---------------------------------------------------------------------
+#- Start Gofer
+
+#- Some variables
+
+GOFER="$Prelude"                 ; export GOFER
+TKGOFER=$TclDir/gofer.tcl        ; export TKGOFER
+
+#- Editors
+
+EDIT=${VISUAL-${EDITOR-/usr/ucb/vi}}
+case `basename $EDIT` in
+    emacs | vi | elvis )  EDITLINE="$EDIT +%d %s"; export EDITLINE ;;
+    none               )  ;;
+    *                  )  EDITLINE=$EDIT; export EDITLINE ;;
+esac
+export EDIT
+
+#- Start the interpreter
+
+exec "$BinDir/site.specific" "$BinDir/tkgofer.exe" $Args
+
+#---------------------------------------------------------------------
+#- the end.
+

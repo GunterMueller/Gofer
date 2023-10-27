@@ -1,0 +1,3 @@
+letrec a == b;
+       b == 3
+in a

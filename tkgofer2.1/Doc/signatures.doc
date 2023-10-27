@@ -1,0 +1,965 @@
+----------------------------------------------------------------------
+-- signatures.doc
+-- All signatures of library functions of TkGofer v. 2.0
+-- Ton Vullinghs, Koen Claessen, September 1997
+----------------------------------------------------------------------
+
+{-
+This file contains the signatures of the user functions
+of the tkgofer prelude. It is divided into 6 parts,
+
+- prelude.gs
+- guiMonad.gs
+- widget.gs
+- concurrent.gs
+- io.gs
+- time.gs
+
+-}
+
+----------------------------------------------------------------------
+--
+-- prelude.gs: extensions to the gofer cc prelude
+--
+----------------------------------------------------------------------
+
+
+-- basic functions
+
+numval :: String -> Int
+self   :: (a -> a -> b) -> a -> b
+groupn :: Int -> [a] -> [[a]]
+
+-- monadic functions
+
+done  :: Monad m => m ()
+(==>) :: Monad m => m Bool -> m a -> m ()
+seq   :: Monad m => m a -> m b -> m b
+void  :: Monad m => m a -> m ()
+binds :: Monad m => [m a] -> m [a]
+seqs  :: Monad m => [m ()] -> m ()
+exitM :: Monad m => String -> m a
+ifM   :: Monad m => Bool -> m () -> m ()
+
+-- standard datatypes
+
+-- maybe
+
+data Maybe a
+  = Just a
+  | Nothing
+
+maybe :: (a -> c) -> c -> Maybe a -> c
+
+instance Functor Maybe
+instance Monad Maybe
+instance Monad0 Maybe
+instance MonadPlus Maybe
+
+-- either
+
+data Either a b
+  = Left a
+  | Right b
+
+either :: (a -> c) -> (b -> c) -> Either a b -> c
+
+-- rosetree
+
+data RoseTree a
+  = Rose a [RoseTree a]
+
+roseTree :: (a -> [b] -> b) -> RoseTree a -> b
+
+instance Functor RoseTree
+
+-- dyn
+
+type Dyn
+
+toDyn   :: a -> Dyn
+fromDyn :: Dyn -> a
+
+-- IO monad
+
+class Monad m => IOMonad m where
+  getCh       :: m Char
+  getContents :: m String
+  getChar     :: m Char
+  putChar     :: Char -> m ()
+  putStr      :: String -> m ()
+  
+instance Monad IO
+instance IOMonad IO
+
+print    :: (Text a, IOMonad m) => a -> m ()
+putStrLn :: IOMonad m => String -> m ()
+getLine  :: IOMonad m => m String
+interact :: IOMonad m => (String -> String) -> m ()
+
+-- mutable state
+
+type Var a
+
+newVar    :: a -> IO (Var a)
+newVar'   :: IO (Var a)
+readVar   :: Var a -> IO a
+writeVar  :: Var a -> a -> IO ()
+updateVar :: (a -> a) -> Var a -> IO ()
+eqVar     :: Var a -> Var a -> Bool
+
+instance Eq (Var a)
+
+-- mutable array
+
+type LArray a b
+
+newArr   :: Ix a => (a,a) -> b -> IO (LArray a b)
+readArr  :: Ix a => LArray a b -> a -> IO b 
+writeArr :: Ix a => LArray a b -> a -> b -> IO ()
+
+
+
+
+----------------------------------------------------------------------
+--
+-- guimonad.gs
+--
+----------------------------------------------------------------------
+
+
+type GUI a
+
+instance Monad GUI
+instance IOMonad GUI
+
+start  :: GUI a -> IO ()
+quit   :: GUI ()
+liftIO :: IO a -> GUI a
+fixGUI :: (GUI a -> GUI a) -> GUI a
+
+-- mutable state
+
+type GVar = Var
+
+newGVar    :: a -> GUI (GVar a)
+newGVar'   :: GUI (GVar a)
+writeGVar  :: GVar a -> a -> GUI ()
+readGVar   :: GVar a -> GUI a
+updateGVar :: (a -> a) -> GVar a -> GUI ()
+
+class IsVar v where
+  newV    :: a -> GUI (v a)
+  newV'   :: GUI (v a)
+  writeV  :: v a -> a -> GUI ()
+  (=:)    :: v a -> a -> GUI () -- same
+  readV   :: v a -> GUI a
+  updateV :: (a -> a) -> v a -> GUI ()
+
+instance IsVar GVar
+
+
+----------------------------------------------------------------------
+--
+-- widget.gs : functions to create, destroy and configure widgets
+--
+----------------------------------------------------------------------
+
+
+-- Class Widget
+
+class TkWidget w => Widget w where
+
+  -- reading and writing configuration options
+
+  cset   :: w -> Conf w -> GUI ()
+  cget   :: GUIValue v => w -> (v -> Conf w) -> GUI v
+  csets  :: w -> [Conf w] -> GUI ()
+
+  -- defining events 
+ 
+  onArgs :: TkEvent -> String -> ([String] -> GUI ()) -> Conf w
+  on     :: TkEvent -> GUI () -> Conf w
+  onxy   :: TkEvent -> ((Int,Int) -> GUI ()) -> Conf w -- relative to widget
+  onXY   :: TkEvent -> ((Int,Int) -> GUI ()) -> Conf w -- relative to screen
+
+  -- destroying events 
+
+  destroyEvent  :: w -> TkEvent -> GUI ()              -- destroy 1 event
+  destroyEvents :: w -> GUI ()                         -- destroy all events
+
+
+-- Class HasBackground 
+ 
+class Widget w => HasBackground w where
+  background :: String -> Conf w
+
+-- Class HasForeground
+ 
+class Widget w => HasForeground w where
+  foreground :: String -> Conf w
+  font       :: String -> Conf w    
+
+-- Class HasBorder 
+ 
+class Widget w => HasBorder w where
+  borderWidth :: Int -> Conf w
+  cursor      :: String -> Conf w    -- see local cursortfont.h
+  relief      :: String -> Conf w    -- sunken, ridge, flat, raised, groove
+
+-- Class HasWidth 
+ 
+class Widget w => HasWidth w where
+  width               :: Int -> Conf w
+  highlightBackground :: String -> Conf w
+  highlightColor      :: String -> Conf w
+  highlightThickness  :: Int -> Conf w
+ 
+-- Class HasFocus
+ 
+class Widget w => HasFocus w where
+  focus     :: w -> GUI ()
+  takeFocus :: Bool -> Conf w
+
+-- Class HasHeight 
+ 
+class Widget w => HasHeight w where
+  height :: Int -> Conf w
+
+-- Class HasPad 
+ 
+class Widget w => HasPad w where
+  padx :: Int -> Conf w
+  pady :: Int -> Conf w
+
+-- Class HasAnchor 
+ 
+class Widget w => HasAnchor w where
+  anchor  :: String -> Conf w
+  justify :: String -> Conf w
+
+-- Class HasIndicator 
+ 
+class Widget w => HasIndicator w where
+  indicatorColor :: String -> Conf w
+  indicatorOn    :: Bool -> Conf w
+
+-- Class HasCoords 
+ 
+class Widget a => HasCoords a where
+  moveObject   :: a -> (Int, Int) -> GUI ()
+  removeObject :: a -> GUI ()
+  lowerObject  :: a -> GUI ()
+  raiseObject  :: a -> GUI ()
+  getCoords    :: a -> GUI [(Int,Int)]
+  setCoords    :: a -> [(Int,Int)] -> GUI ()
+
+-- Class HasFillColor 
+ 
+class HasCoords a => HasFillColor a where
+  penWidth  :: Int -> Conf a
+  penColor  :: String -> Conf a
+  fillColor ::  String -> Conf a
+
+-- Class HasScroll 
+ 
+class Widget w => HasScroll w 
+
+-- Class HasInput 
+ 
+class Widget (c (w v)) => HasInput c w v where
+  getValue  :: c (w v) -> GUI v
+  setValue  :: c (w v) -> v -> GUI ()
+  updValue  :: (v -> v) -> c (w v) -> GUI ()
+  withValue :: (v -> GUI b) -> c (w v) -> GUI b
+  initValue :: v -> Conf (c (w v))
+  readOnly  :: Bool -> Conf (c (w v))
+ 
+-- Class HasPosition 
+ 
+class HasInput WItem (w p) v => HasPosition w p v where
+  putBegin     :: WItem (w p v) -> v -> GUI ()
+  putEnd       :: WItem (w p v) -> v -> GUI ()
+  putPos       :: WItem (w p v) -> p -> v -> GUI ()
+  getFromTo    :: WItem (w p v) -> p -> p -> GUI v
+  getSize      :: WItem (w p v) -> GUI p
+  delFromTo    :: GUIValue p => (WItem (w p v)) -> p -> p -> GUI ()
+  setYView     :: WItem (w p v) -> Int -> GUI ()
+  getSelection :: (WItem (w p v)) -> GUI [p]
+  setSelection :: (WItem (w p v)) -> [p] -> GUI ()
+  selectBackground  :: String -> Conf (WItem (w p v))
+  selectForeground  :: String -> Conf (WItem (w p v))
+  selectBorderwidth :: Int -> Conf (WItem (w p v))
+ 
+-- Class HasText 
+ 
+class HasForeground w => HasText w where
+  text      :: String -> Conf w
+  bitmap    :: String -> Conf w
+  underline :: Int -> Conf w
+
+-- Class HasCommand
+ 
+class Widget w => HasCommand w where
+  command          :: GUI () -> Conf w
+  active           :: Bool -> Conf w
+  activeBackground :: String -> Conf w
+  activeForeground :: String -> Conf w
+  invoke           :: w -> GUI ()
+  destroyCommand   :: w -> GUI ()       -- delete a callback
+
+-- Class GUIValue 
+
+class (Text g) => GUIValue g where
+  tk_convert         :: String -> OkOrErr g
+  tk_defaultValue    :: g
+  tk_toGUI           :: g -> String
+  tk_fromGUI         :: String -> GUI g
+
+--------------------------------------------------------------------------
+-- Events
+ 
+key, shiftkey                                 :: String -> TkEvent
+return                                        :: TkEvent
+cursorUp, cursorDown, cursorLeft, cursorRight :: TkEvent
+click, doubleClick, motion                    :: Int -> TkEvent
+mouseMotion                                   :: TkEvent
+enterWidget, leaveWidget, destroyWidget       :: TkEvent
+
+
+--------------------------------------------------------------------------
+-- Layout Combinators
+
+infixl 7 <<, <*<, <-<, <|<, <+<, <*-<, <*|<, <*+<
+ 
+(<<),(<*<),(<-<),(<|<),(<+<),(<*-<),(<*|<),(<*+<) ::
+   (Widget (WItem a),Widget (WItem b)) => WItem a -> WItem b -> Frame
+ 
+infixl 6 ^^, ^*^, ^-^, ^|^, ^+^, ^*-^, ^*|^, ^*+^
+ 
+(^*^),(^^),(^-^),(^|^),(^+^),(^*-^),(^*|^),(^*+^) ::
+   (Widget (WItem a), Widget (WItem b)) => WItem a -> WItem b -> Frame
+ 
+matrix  :: Widget (WItem a) => Int -> [WItem a] -> Frame
+matrix' :: Int -> [Frame] -> Frame
+
+horizontal, vertical :: Widget (WItem a) => [WItem a] -> Frame
+
+-- Sizing
+
+expand, fillX, fillY, fillXY,flexible :: Widget (WItem a) => WItem a -> WItem a
+
+
+--------------------------------------------------------------------------
+-- Windows and Window Items
+
+-- Window 
+
+window        :: [Conf Window] -> GUI Window
+windowDefault :: [Conf Window] -> [Conf Default] -> GUI Window
+ 
+instance HasHeight     Window
+instance HasWidth      Window
+instance HasFocus      Window
+instance HasBorder     Window
+instance HasBackground Window
+ 
+closeWindow   :: Window -> GUI ()
+openWindow    :: Widget (WItem w) 
+              => [Conf Window] -> (Window -> GUI (WItem w)) -> GUI ()
+openDefault   :: Widget (WItem w) 
+              => [Conf Window] -> [Conf Default] 
+                 -> (Window -> GUI (WItem w)) -> GUI ()
+pack          :: Widget (WItem a) => WItem a -> GUI ()
+packDefault   :: Widget (WItem a) => WItem a -> [Conf Default] -> GUI ()
+
+title         :: String -> Conf Window
+winSize       :: (Int,Int) -> Conf Window
+winPosition   :: (Int,Int) -> Conf Window
+
+
+-- Frame 
+ 
+frame :: Widget (WItem a) => [Conf Frame] -> WItem a -> GUI Frame
+
+instance HasHeight     Frame
+instance HasBorder     Frame
+instance HasFocus      Frame
+instance HasWidth      Frame
+instance HasBackground Frame
+ 
+
+-- Label 
+ 
+label :: [Conf Label] -> Window -> GUI Label
+ 
+instance HasAnchor     Label
+instance HasBorder     Label
+instance HasFocus      Label
+instance HasWidth      Label
+instance HasHeight     Label
+instance HasPad        Label
+instance HasBackground Label
+instance HasForeground Label
+instance HasText       Label
+ 
+
+-- Scrollbar 
+ 
+scrollbar        :: [Conf Scrollbar] -> Window -> GUI Scrollbar
+hscroll, vscroll :: HasScroll (WItem w)
+                 => [Conf Scrollbar] -> WItem w -> GUI Scrollbar
+
+instance HasWidth      Scrollbar
+instance HasFocus      Scrollbar
+instance HasBorder     Scrollbar
+instance HasBackground Scrollbar
+ 
+
+-- Scale 
+
+vscale, hscale :: [Conf Scale] -> Window -> GUI Scale
+
+instance HasBackground Scale
+instance HasForeground Scale
+instance HasFocus      Scale
+instance HasBorder     Scale 
+instance HasWidth      Scale 
+instance HasCommand    Scale 
+instance HasText       Scale 
+instance HasHeight     Scale 
+instance GUIValue v => HasInput WItem Scale0 v 
+
+scaleRange   :: (Int,Int) -> Conf Scale
+sliderLength :: Int    -> Conf Scale
+tickInterval :: Int    -> Conf Scale
+troughColor  :: String -> Conf Scale
+
+
+-- Entry 
+
+entry :: (Widget (Entry a), GUIValue a) 
+      => [Conf (Entry a)] -> Window -> GUI (Entry a)
+
+instance HasBackground (Entry a)
+instance HasForeground (Entry a)
+instance HasFocus      (Entry a)
+instance HasBorder     (Entry a)
+instance HasWidth      (Entry a)
+instance HasScroll     (Entry a)
+instance GUIValue v => HasInput WItem Entry0 v 
+
+
+-- Edit 
+ 
+edit :: [Conf Edit] -> Window -> GUI Edit
+
+instance HasBackground Edit 
+instance HasForeground Edit
+instance HasWidth      Edit
+instance HasBorder     Edit
+instance HasFocus      Edit
+instance HasHeight     Edit
+instance HasPad        Edit
+instance HasScroll     Edit
+instance HasInput WItem (Edit0 (Int,Int)) String 
+instance HasPosition Edit0 (Int,Int) String 
+ 
+wrap :: Bool -> Conf Edit
+
+-- Mark
+ 
+mouseMark, insMark, endMark :: Mark
+ 
+setMark :: Edit -> (Int,Int) -> GUI Mark
+getMark :: Edit -> Mark -> GUI (Int,Int)
+
+-- Tag
+ 
+instance HasBackground Tag
+instance HasForeground Tag
+instance HasText       Tag
+ 
+tag       :: [(Int,Int)] -> [Conf Tag] -> Edit -> GUI Tag
+putPosTag :: Edit -> (Int,Int) -> String -> [Conf Tag] -> GUI Tag
+putEndTag :: Edit -> String -> [Conf Tag] -> GUI Tag
+delTag    :: Tag -> GUI ()
+tagRange  :: Tag -> GUI [(Int,Int)]
+lowerTag  :: Tag -> GUI ()
+
+
+-- Listbox
+
+listbox        :: (Widget (Listbox a), GUIValue a)
+               => [Conf (Listbox a)] -> Window -> GUI (Listbox a)
+
+instance HasBackground (Listbox v) 
+instance HasForeground (Listbox v)
+instance HasFocus      (Listbox v)
+instance HasScroll     (Listbox v)
+instance HasBorder     (Listbox v)
+instance HasWidth      (Listbox v)
+instance HasHeight     (Listbox v)
+instance HasPosition Listbox0 Int [v] => HasInput WItem (Listbox0 Int) [v] 
+instance GUIValue v => HasPosition Listbox0 Int [v] 
+ 
+multipleSelect :: Bool -> Conf (Listbox a)
+
+
+-- Message 
+ 
+message :: [Conf Message] -> Window -> GUI Message
+aspect  :: Int -> Conf Message
+ 
+instance HasAnchor     Message
+instance HasWidth      Message
+instance HasFocus      Message
+instance HasBorder     Message
+instance HasBackground Message
+instance HasForeground Message
+instance HasPad        Message
+instance HasText       Message 
+ 
+--------------------------------------------------------------------------
+-- Menu's and Buttons
+
+-- Menu 
+ 
+menu        :: Widget (c Menubutton0)
+            => [Conf Menu] -> c Menubutton0 -> GUI Menu
+menuDefault :: Widget (c Menubutton0)
+            => [Conf Menu] -> [Conf Default] -> c Menubutton0 -> GUI Menu
+popup       :: (Int, Int) -> Menu -> GUI ()
+
+instance HasBorder     Menu
+instance HasBackground Menu
+
+
+-- Button 
+
+button  :: [Conf Button] -> Window -> GUI Button
+mbutton :: [Conf MButton] -> Menu -> GUI MButton
+
+instance HasBackground Button 
+instance HasForeground Button
+instance HasFocus      Button
+instance HasAnchor     Button
+instance HasBorder     Button
+instance HasWidth      Button
+instance HasHeight     Button
+instance HasPad        Button
+instance HasText       Button
+instance HasCommand    Button
+instance HasBackground MButton 
+instance HasForeground MButton
+instance HasText       MButton
+instance HasCommand    MButton
+ 
+
+-- Radiobutton
+ 
+radiobutton  :: [Conf Radiobutton] -> Window -> GUI Radiobutton
+mradiobutton :: [Conf MRadiobutton] -> Menu -> GUI MRadiobutton
+
+instance HasAnchor     Radiobutton
+instance HasHeight     Radiobutton
+instance HasWidth      Radiobutton
+instance HasFocus      Radiobutton
+instance HasBorder     Radiobutton
+instance HasPad        Radiobutton
+instance HasBackground Radiobutton 
+instance HasForeground Radiobutton
+instance HasText       Radiobutton
+instance HasCommand    Radiobutton
+instance HasIndicator  Radiobutton
+instance HasBackground MRadiobutton 
+instance HasForeground MRadiobutton
+instance HasText       MRadiobutton
+instance HasCommand    MRadiobutton
+instance HasIndicator  MRadiobutton
+ 
+
+
+-- Radio 
+
+instance HasInput TItem Radio0 Int 
+ 
+radio :: (Widget (c Radiobutton0))
+      => [Conf Radio] ->[c Radiobutton0] -> GUI Radio
+instance Widget Radio 
+
+
+-- Menubutton 
+
+menubutton :: [Conf Menubutton] -> Window -> GUI Menubutton
+cascade    :: [Conf Cascade] -> Menu -> GUI Cascade
+ 
+instance HasAnchor     Menubutton
+instance HasHeight     Menubutton
+instance HasWidth      Menubutton
+instance HasFocus      Menubutton
+instance HasBorder     Menubutton
+instance HasPad        Menubutton
+instance HasBackground Menubutton
+instance HasForeground Menubutton
+instance HasText       Menubutton 
+instance HasCommand    Menubutton 
+instance HasBackground Cascade
+instance HasForeground Cascade
+instance HasText       Cascade 
+instance HasCommand    Cascade 
+ 
+
+
+-- Checkbutton 
+ 
+checkbutton  :: [Conf Checkbutton] -> Window -> GUI Checkbutton
+mcheckbutton :: [Conf MCheckbutton] -> Menu -> GUI MCheckbutton
+ 
+instance HasAnchor     Checkbutton
+instance HasBorder     Checkbutton
+instance HasFocus      Checkbutton
+instance HasWidth      Checkbutton
+instance HasHeight     Checkbutton
+instance HasPad        Checkbutton
+instance HasBackground Checkbutton
+instance HasForeground Checkbutton
+instance HasText       Checkbutton
+instance HasCommand    Checkbutton
+instance HasIndicator  Checkbutton
+instance HasBackground MCheckbutton
+instance HasForeground MCheckbutton
+instance HasText       MCheckbutton
+instance HasCommand    MCheckbutton
+instance HasIndicator  MCheckbutton
+instance GUIValue v => HasInput c Checkbutton0 v 
+
+
+-- Separator 
+ 
+separator :: Menu -> GUI Separator
+ 
+
+--------------------------------------------------------------------------
+-- Canvas and Canvas Items
+
+-- Canvas
+
+canvas       :: [Conf Canvas] -> Window -> GUI Canvas
+ 
+instance HasBackground Canvas
+instance HasScroll     Canvas
+instance HasFocus      Canvas
+instance HasBorder     Canvas
+instance HasWidth      Canvas
+instance HasHeight     Canvas
+ 
+scrollRegion :: (Int,Int) -> Conf Canvas
+clearCanvas  :: Canvas -> GUI ()
+
+
+-- CArc 
+
+carc :: (Int,Int) -> (Int,Int) -> [Conf CArc] -> Canvas -> GUI CArc
+
+instance HasFillColor CArc
+
+angleStart  :: Int -> Conf CArc
+angleExtent :: Int -> Conf CArc
+
+
+-- CPolygon
+
+cpolygon :: [(Int,Int)] -> [Conf CPolygon] -> Canvas -> GUI CPolygon
+
+instance HasFillColor CPolygon
+
+
+-- CPicture 
+
+cpicture :: (Int,Int) -> [Conf CPicture] -> Canvas -> GUI CPicture
+image    :: String -> Conf CPicture 
+
+
+-- COval 
+ 
+coval :: (Int,Int) -> (Int,Int) -> [Conf COval] -> Canvas -> GUI COval
+
+instance HasFillColor COval
+
+
+-- CLine
+ 
+cline :: (Int,Int) -> (Int,Int) -> [Conf CLine] -> Canvas -> GUI CLine
+
+instance HasFillColor CLine 
+ 
+
+-- CRect
+ 
+crect :: (Int,Int) -> (Int,Int) -> [Conf CRect] -> Canvas -> GUI CRect
+ 
+instance HasFillColor CRect
+
+
+-- CText
+ 
+ctext :: (Int,Int) -> [Conf CText] -> Canvas -> GUI CText
+
+instance HasText       CText 
+instance HasBackground CText 
+instance HasForeground CText 
+instance HasAnchor     CText
+ 
+
+-- CBitmap
+ 
+cbitmap :: (Int,Int) -> [Conf CBitmap] -> Canvas -> GUI CBitmap
+
+instance HasBackground CBitmap 
+instance HasForeground CBitmap 
+instance HasAnchor     CBitmap
+instance HasText       CBitmap 
+
+
+--------------------------------------------------------------------------
+-- Special Widgets
+
+-- Clipboard 
+
+-- a clipboard widget is the widget interface to an updatable state
+
+clipboard :: Widget (Clipboard a) 
+          => [Conf (Clipboard a)] -> GUI (Clipboard a)
+
+instance Widget (Clipboard a) 
+instance HasInput TItem Clipboard0 a 
+
+
+
+
+----------------------------------------------------------------------
+-- Composing Widgets
+ 
+composeWidget :: (Widget (WItem v), Widget (WItem w))
+              => w -> WItem v -> [Conf (WItem w)] -> GUI (WItem w)
+getWidget     :: WItem w -> w
+
+
+-- input mask, a combination of a label and a entryfield:
+
+input :: (Widget (Input v), GUIValue v)
+      => [Conf (Input v)] -> Window -> GUI (Input v)
+
+instance Widget (Entry v) => Widget (Input v) 
+instance HasBackground (Input v)
+instance HasForeground (Input v)
+instance HasText       (Input v)
+instance HasBorder     (Input v)
+instance HasFocus (Entry v) => HasFocus (Input v) 
+instance (HasInput WItem Entry0 v) => HasInput WItem Input0 v 
+
+inputE :: Input v -> Entry v
+inputL :: Input v -> Label
+
+
+--------------------------------------------------------------------------
+-- embedded windows : poor man's version 
+
+class HasEmbeddedWindow c 
+  ewindow :: (Int,Int) -> [Conf Frame] -> c -> GUI Window
+
+instance HasEmbeddedWindow Edit 
+instance HasEmbeddedWindow Canvas 
+
+--------------------------------------------------------------------------
+-- Useful functions
+
+-- updating the screen
+
+updateIdleTask :: GUI ()
+updateTask     :: GUI ()
+
+-- RGB Colors
+
+rgb :: Int -> Int -> Int -> String  -- create an rgb color string  
+
+-- Destroying Widgets  
+
+destroy :: Widget w => w -> GUI () -- throw widget and all the events away
+
+-- adding new configuration options 
+
+myConf :: Widget w => (w -> GUI a) -> Conf w
+     
+
+
+----------------------------------------------------------------------
+--
+-- concurrent.gs 
+--
+----------------------------------------------------------------------
+
+fork   :: GUI a -> GUI ()
+forks  :: [GUI a] -> GUI ()
+atomic :: GUI a -> GUI a
+par    :: GUI a -> GUI b -> GUI (a,b)
+choice :: [(MVar a, a -> GUI b)] -> GUI b
+
+-- MVar
+
+type MVar a
+
+instance Eq (MVar a)
+instance IsVar MVar
+
+newMVar'   :: GUI (MVar a)
+newMVar    :: a -> GUI (MVar a)
+takeMVar   :: MVar a -> GUI a
+putMVar    :: MVar a -> a -> GUI ()
+updateMVar :: (a -> a) -> MVar a -> GUI ()
+eqMVar     :: MVar a -> MVar a -> Bool
+
+-- CVar
+
+type CVar a
+
+instance Eq (CVar a)
+instance IsVar CVar
+
+newCVar'   :: GUI (CVar a)
+newCVar    :: a -> GUI (CVar a)
+takeCVar   :: CVar a -> GUI (a)
+putCVar    :: CVar a -> a -> GUI ()
+eqCVar     :: CVar a -> CVar a -> Bool
+
+-- Channel
+
+type Channel a
+
+instance Eq (Channel a)
+instance IsVar Channel
+
+newChan'   :: GUI (Channel a)
+newChan    :: a -> GUI (Channel a)
+putChan    :: Channel a -> a -> GUI ()
+getChan    :: Channel a -> GUI a
+eqChan     :: Channel a -> Channel a -> Bool
+
+-- SkipChan
+
+type SkipChan a
+
+instance Eq (SkipChan a)
+instance IsVar SkipChan
+
+newSkipChan' :: GUI (SkipChan a)
+putSkipChan  :: SkipChan a -> a -> GUI ()
+getSkipChan  :: SkipChan a -> GUI a
+dupSkipChan  :: SkipChan a -> GUI (SkipChan a)
+eqSkipChan   :: SkipChan a -> SkipChan a -> Bool
+
+--------------------------------------------------------
+
+
+----------------------------------------------------------------------
+--
+-- io.gs
+--
+----------------------------------------------------------------------
+
+type FilePath = String
+
+type Handle
+
+instance Eq Handle
+
+stdin, stdout, stderr :: Handle
+
+data IOMode
+  = ReadMode
+  | WriteMode
+  | AppendMode
+  | ReadWriteMode
+
+data SeekMode 
+  = AbsoluteSeek
+  | RelativeSeek
+  | SeekFromEnd
+
+openFile     :: FilePath -> IOMode -> GUI Handle
+hClose       :: Handle -> GUI ()
+
+hGetChar     :: Handle -> GUI Char
+hGetLine     :: Handle -> GUI String
+hGetString   :: Handle -> Int -> GUI String
+hGetContents :: Handle -> GUI String
+
+hPutChar     :: Handle -> Char -> GUI ()
+hPutStr      :: Handle -> String -> GUI ()
+hPutStrLn    :: Handle -> String -> GUI ()
+hPrint       :: Text a => Handle -> a -> GUI ()
+
+hFileSize    :: Handle -> GUI Int
+hIsEOF       :: Handle -> GUI Bool
+hIsReadable  :: Handle -> GUI Bool
+hIsWritable  :: Handle -> GUI Bool
+hIsExecutable :: Handle -> GUI Bool
+isEOF        :: GUI Bool
+
+hFlush       :: Handle -> GUI ()
+hSeek        :: Handle -> SeekMode -> Int -> GUI ()
+
+fileCd       :: FilePath -> GUI ()
+filePwd      :: GUI FilePath
+fileDir      :: FilePath -> GUI [FilePath]
+fileIsDir    :: FilePath -> GUI Bool
+fileIsFile   :: FilePath -> GUI Bool
+fileExists   :: FilePath -> GUI Bool
+
+withFile     :: FilePath -> IOMode -> (Handle -> GUI a) -> GUI a
+infoFile     :: FilePath -> (Handle -> GUI a) -> GUI a
+
+writeFileLines :: FilePath -> [String] -> GUI ()
+writeFile      :: FilePath -> String -> GUI ()
+appendFile     :: FilePath -> String -> GUI ()
+
+readFile'      :: FilePath -> GUI String    -- strict reading
+readFileLines' :: FilePath -> GUI [String]
+readFile       :: FilePath -> GUI String    -- lazy reading
+readFileLines  :: FilePath -> GUI [String]
+
+system         :: String -> GUI String
+
+fileOpenDialogue :: GUI (Maybe FilePath)
+fileSaveDialogue :: GUI (Maybe FilePath)
+
+
+
+
+----------------------------------------------------------------------
+--
+-- time.gs: 
+--
+----------------------------------------------------------------------
+
+-- all times are in milliseconds
+
+after :: Int -> GUI a -> GUI ()
+every :: Int -> GUI a -> GUI ()
+delay :: Int -> GUI () -- BUG: only use delay in a forked process!
+
+getTicks :: GUI Int
+random   :: Int -> GUI Int
+timeOf   :: GUI a -> GUI Int
+
+-- timer widget
+
+type Timer
+instance Widget Timer
+instance HasCommand Timer
+ 
+timer :: [Conf Timer] -> GUI Timer
+
+--------------------------------------------------------
+-- the end.

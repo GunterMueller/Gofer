@@ -1,0 +1,3 @@
+letrec f == \ x y . x + y
+in f 7 1
+

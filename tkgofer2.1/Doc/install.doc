@@ -1,0 +1,176 @@
+----------------------------------------------------------------
+-- install.doc
+-- Install guide for TkGofer 2.0
+-- Koen Claessen, Ton Vullinghs, 1997
+----------------------------------------------------------------
+
+----------------------------------------------------------------
+-- CONTENTS
+
+  I.   SIMPLE INSTALL GUIDE
+  II.  TROUBLE SHOOTING
+  III. THE DETAILS
+
+----------------------------------------------------------------
+-- I. SIMPLE INSTALL GUIDE
+
+This paragraph contains a few simple steps you have to take in order to install
+TkGofer 2.0. In the paragraph III the structure of the whole thing will be
+explained.
+
+ 1. Under the assumption that everything has already been unpacked, go to
+    the root of the directory TkGofer2.0. Make sure that all directories and
+    files have the right read/write/execute permissions for the right users!
+    
+ 2. Edit the file "tkgofer.install". You will have to set a few variables.
+ 
+    - Root
+        You can probably leave the variable this way if you will always execute
+        tkgofer.install from this directory. Else you will have to fill in where
+        the directory TkGofer2.0 is at.
+    
+    - LibStd
+        The location of the standard libraries. Needed at link time. Usually
+        something like "/usr/lib".
+    
+    - LibTcl, IncTcl, LibTk, IncTk, LibX11, IncX11
+        The locations of the libraries and include files of Tcl, Tk and X11.
+    
+    - Architecture
+        You have to choose from the list given in the file. Gofer needs this
+        in order to make some compilation decisions.
+     
+    - ArchMult, ArchCmd
+        Some systems have different architectures sharing the same filesystem.
+        In this case almost all the files of the distribution can be shared,
+        except for the executable. If this is not the case with your system,
+        set ArchMult="no".
+        
+        If you set ArchMult="yes", and specify the Unix command that prints the
+        architecture in the variable ArchCmd, then the installation will make
+        an executable that will only be run on the specified architecture when
+        you execute the command "tkgofer".
+
+        Running the install script on other architectures (with the same
+        settings, except for the variable Architecture), will result in a
+        transparent use of the command "tkgofer".
+    
+    These are the basic variables. On some systems you need to fiddle about with
+    the variable LinkFlags as well:
+    
+    - If the libraries for Tk and Tcl are not called what they are called here. 
+      Change the names.
+    
+    - If the c compiler doesn't need or cannot find the libraries
+      "-ldl -lsocket -lnsl". If so, just remove them.
+    
+ 3. Now run the script "tkgofer.install". If everything goes succesfully,
+    we applaud. If not, take a look at the next paragraph: troubleshooting.
+
+ 4. Sometimes, in order for the executable to run successfully, some
+    environment variables need to be set. For example, a directory needs to be
+    specified in order to find dynamic libraries. Or Tk needs some local
+    settings.
+    
+    If this is necessary, stay away from the script "tkgofer". This script is
+    regenerated at every compilation, so its no use changing it. Edit the file
+    "site.specific" in the directory Bin/ instead. This file contains room for 
+    specifying some variables that need to be set just before the execution of
+    every tkgofer session.
+
+ 5. Run the script "tkgofer". Best is to put the directory TkGofer2.0/Bin in
+    your PATH, or make a link "tkgofer" in your own bin directory. If something
+    goes wrong, take a look at the next paragraph: troubleshooting.
+
+----------------------------------------------------------------
+-- II. TROUBLE SHOOTING
+
+ 1. What to do when something goes wrong during installation? Try these hints,
+    and just run the script "tkgofer.install" again.
+ 
+    - The script "tkgofer.install" won't run.
+        - Make sure that it is executable.
+        - Make sure that you didn't make any typos when editing the file.
+        - Make sure there exists a file called /bin/sh.
+
+    - The script runs, but complains about a variable not being defined.
+        - Edit the file, and set the variable to the right value. See
+          paragraph I.
+    
+    - The script enters the making phase, but gives errors during compiling.
+        - Make sure you set the Architecture variable to the right value.
+        - Make sure that IncTcl, IncTk, and IncX11 have the right value.
+    
+    - During making, compilation works fine, but linking goes wrong.
+        - Make sure you set LibTcl, LibTk and LibX11 to the right values.
+        - Fiddle about with the variable LinkFlags. See I.2.
+        - If you use dynamic libraries, you sometimes need to tell the linker
+          where to find them (with +b $LibTcl). Extend the variable LinkFlags
+          with "+Xlinker +b +Xlinker $LibTcl". Look in the manual of your
+          linker.
+
+    - The making phase is over, but installation goes wrong.
+        - Check the variables ArchMult and ArchCmd. Maybe you should try
+          ArchMult="no", and see what happens.
+    
+    - During the creation of preludes things go wrong.
+        - Check if the file in Bin/make.prelude is executable.
+        
+ 2. What to do when everything installs nicely, but tkgofer won't start.
+ 
+    - Check if the file Bin/tkgofer is executable.
+
+    - If ArchMult="yes", check if the ArchCmd works.
+
+ 3. If tkgofer starts, but the Tk part doesn't work.
+
+    - Sometimes, Tk and Tcl need a special variable, called TK_LIBRARY and
+      TCL_LIBRARY. Set these variables to the location of "tk.tcl" and
+      "init.tcl".
+
+    - If you use dynamic libraries, make sure you specified the right library
+      directory.
+
+    - Also, on some Unix systems, such as SGI's, you need to set an environment
+      variable that specifies where to find the dynamic library at execution
+      time. Find out which variable this is (for example LD_LIBRARY_PATH), and
+      set it in the file Bin/site.specific. See also II.1.
+
+----------------------------------------------------------------
+-- III. THE DETAILS
+
+If you still have problems, you might want to know how the whole install system
+is built up. At installation time, the following things happen:
+
+  1. According to the set variables, the following files are created. Their
+     "masks" are called skeletons, and are located in the directory Skeletons.
+     Inside these files, a @Variable@ refers to the value of the variable
+     Variable.
+     
+       - Makefile
+       - prelude.h
+       - tkgofer
+       - make.prelude
+       
+     prelude.h is only newly created if the Architecture variable has changed.
+  
+  2. Now, within the directory Sources, we run the command "make". It uses the
+     Makefile created from the skeleton. If you want to change the Makefile
+     temporarily, you shouldn't run tkgofer.install until you've used it.
+     
+     If you want to change it for good, change the skeleton
+     Skeletons/Makefile.skel instead.
+  
+  3. The executable is moved to the right place. Its name depends on wether
+     ArchMult is set or not.
+  
+  4. Finally, the different preludes are created within the directory Preludes,
+     using the different modules in the directory Modules.
+
+If you want finer grained control over the installation, you should try
+tkgofer.install -help.
+
+----------------------------------------------------------------
+-- the end.
+     
+    

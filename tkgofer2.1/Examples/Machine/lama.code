@@ -1,0 +1,185 @@
+type    P_prog = [P_stat]
+type    P_stat = [Char]
+
+data    Binding = LOC | GLOB
+instance Eq Binding where
+   LOC  == LOC   = True
+   GLOB == GLOB  = True
+   _    == _     = False
+
+type    LamaPosition = (Binding,Int)
+type    Env = Ident -> LamaPosition
+
+p_code :: Expr -> P_prog
+p_code e = reformat(fst(v_code e undef 0 1) ++ ["stop"])
+
+reformat [] = []
+reformat [x] = [x]
+reformat (x:s) =
+  let s' = reformat s
+  in if ':' `elem` x then (x ++ head s'):(tail s') else x:s'
+
+{-
+reformat [] = []
+reformat [x] = [x]
+reformat (x:y:s) = if ':' `elem` x then (x ++ y):reformat s else x:reformat (y:s)
+-}
+
+undef :: Ident -> LamaPosition
+undef _ = (LOC,-1)
+
+------------------------------------------------------------------------------
+
+b_code :: Expr -> Env -> Int -> Int -> (P_prog,Int)
+b_code (Basic (Integer i)) beta kp n = (["ldb " ++ show(i)],n)
+b_code (Basic (Boolean b)) beta kp n = (["ldb " ++ show(b)],n)
+b_code (Plus e1 e2) beta kp n = (ce1 ++ ce2 ++ ["add"],n2)
+                                 where (ce1,n1) = b_code e1 beta kp n 
+                                       (ce2,n2) = b_code e2 beta (kp+1) n1 
+b_code (Minus e1 e2) beta kp n = (ce1 ++ ce2 ++ ["sub"],n2)
+                                 where (ce1,n1) = b_code e1 beta kp n 
+                                       (ce2,n2) = b_code e2 beta (kp+1) n1 
+b_code (Mult e1 e2) beta kp n = (ce1 ++ ce2 ++ ["mult"],n2)
+                                 where (ce1,n1) = b_code e1 beta kp n 
+                                       (ce2,n2) = b_code e2 beta (kp+1) n1 
+b_code (Div e1 e2) beta kp n = (ce1 ++ ce2 ++ ["div"],n2)
+                                 where (ce1,n1) = b_code e1 beta kp n 
+                                       (ce2,n2) = b_code e2 beta (kp+1) n1 
+b_code (Equal e1 e2) beta kp n = (ce1 ++ ce2 ++ ["eql"],n2)
+                                 where (ce1,n1) = b_code e1 beta kp n
+                                       (ce2,n2) = b_code e2 beta (kp+1) n1
+b_code (Not e) beta kp n = (ce1 ++ ["not"],n1)
+                           where (ce1,n1) = b_code e beta kp n
+b_code (Cond e1 e2 e3) beta kp n = 
+   (ce1 ++ ["jfalse " ++ show(n)] ++ ce2 ++ ["ujmp " ++ show(n+1)] ++ 
+   [show(n) ++ ": "] ++ ce3 ++ [show(n+1) ++ ": "],n3)
+   where (ce1,n1) = b_code e1 beta kp (n+2)
+         (ce2,n2) = b_code e2 beta kp n1
+         (ce3,n3) = b_code e3 beta kp n2
+-- b_code (IsNil e) beta kp n = (ce ++ ["isnil"],n1)
+--                            where (ce,n1) = b_code e beta kp n
+b_code e beta kp n = (ce ++ ["getbasic"],n1)
+                     where (ce,n1) = v_code e beta kp n 
+
+------------------------------------------------------------------------------
+
+v_code :: Expr -> Env -> Int -> Int -> (P_prog,Int)
+v_code (Basic b) beta kp n = (ce ++ ["mkbasic"],n1)
+                             where (ce,n1) = b_code (Basic b) beta kp n
+v_code e@(Plus e1 e2) beta kp n = (ce ++ ["mkbasic"],n1)
+                                where (ce,n1) = b_code e beta kp n 
+v_code e@(Minus e1 e2) beta kp n = (ce ++ ["mkbasic"],n1)
+                                where (ce,n1) = b_code e beta kp n 
+v_code e@(Mult e1 e2) beta kp n = (ce ++ ["mkbasic"],n1)
+                                where (ce,n1) = b_code e beta kp n 
+v_code e@(Div e1 e2) beta kp n = (ce ++ ["mkbasic"],n1)
+                                where (ce,n1) = b_code e beta kp n 
+v_code e@(Equal e1 e2) beta kp n = (ce ++ ["mkbasic"],n1)
+                                 where (ce,n1) = b_code e beta kp n
+v_code (Not e) beta kp n = (ce ++ ["mkbasic"],n1)
+                           where (ce,n1) = b_code (Not e) beta kp n
+v_code (Cond e1 e2 e3) beta kp n =
+   (ce1 ++ ["jfalse " ++ show(n)] ++ ce2 ++ ["ujmp " ++ show(n+1)] ++ [show(n) ++ ": "] ++ 
+   ce3 ++ [show(n+1) ++ ": "],n3)
+   where (ce1,n1) = b_code e1 beta kp (n+2)
+         (ce2,n2) = v_code e2 beta kp n1
+         (ce3,n3) = v_code e3 beta kp n2
+v_code (Var x) beta kp n = ((getvar x beta kp) ++ ["eval"],n)
+v_code (Lambda is e) beta kp n = (ce,n1)
+                                 where (ce,n1) = c_code (Lambda is e) beta kp n 
+v_code (Appl e es) beta kp n = (["mark " ++ show(n)] ++ cs ++ ce ++ ["apply",show(n) ++ ": "],n2)
+                               where (cs,n1) = c_code_list es [] beta (kp+3) 1 (n+1)
+                                     (ce,n2) = v_code e beta (kp + length es + 3) n1
+v_code (Letrec ds e0) beta kp n1 = 
+   ((repeat n "alloc") ++ cs ++ ce ++ ["slide " ++ show(n)],n3)
+   where n = length ds
+         kp' = kp + n
+         beta' = modifyloc beta (locals ds) kp (+)
+         repeat n c = if n == 0 then [] else c:(repeat (n-1) c)
+         (cs,n2) = mk_code_list (definitions ds) beta' kp' n n1
+         (ce,n3) = v_code e0 beta' kp' n2
+v_code (List []) beta kp n = (["nil"],n)
+v_code (List es) beta kp n = (["nil"] ++ cs,n1)
+   where (cs,n1) = c_code_list es ["cons"] beta (kp+1) 0 n  
+v_code (Cons e1 e2) beta kp n = (ce1 ++ ce2 ++ ["cons"],n2) 
+                                where (ce1,n1) = c_code e2 beta kp n
+                                      (ce2,n2) = c_code e1 beta (kp+1) n1
+v_code (Head e) beta kp n = (ce ++ ["hd","eval"],n1)
+                            where (ce,n1) = v_code e beta kp n
+v_code (Tail e) beta kp n = (ce ++ ["tl","eval"],n1)
+                            where (ce,n1) = v_code e beta kp n
+v_code (IsNil e) beta kp n = (ce ++ ["isnil", "mkbasic"],n1)
+                           where (ce,n1) = v_code e beta kp n
+
+
+
+------------------------------------------------------------------------------
+
+
+mk_code_list [] beta kp n lb = ([],lb)
+mk_code_list (e:es) beta kp n lb =
+   (ce ++ ["rewrite " ++ show(n)] ++ cs,lb2) 
+   where (ce,lb1) = c_code e beta kp lb
+         (cs,lb2) = mk_code_list es beta kp (n-1) lb1
+
+c_code_list [] cd beta kp delta lb = ([],lb)
+c_code_list es cd beta kp delta lb = (ce ++ cd ++ cs,lb2)
+    where (ce,lb1) = c_code (last es) beta kp lb
+          (cs,lb2) = c_code_list (init es) cd beta (kp+delta) delta lb1
+
+
+------------------------------------------------------------------------------
+
+c_code :: Expr -> Env -> Int -> Int -> (P_prog,Int)
+c_code (Basic x) beta kp n = v_code (Basic x) beta kp n
+
+
+-- OPTIMIZATION !!!!
+
+c_code (Var x) beta kp n = (getvar x beta kp,n)
+
+c_code (Lambda is e) beta kp lb = 
+   (pushfree fr beta kp ++ ["mkvec " ++ show(g),"mkvec 0","ldl " ++ show(lb),
+   "mkfunval","ujmp " ++ show(lb+1),show(lb) ++ ": ","targ " ++ show(n)] ++ 
+   ce ++ ["return " ++ show(n), show(lb+1) ++ ": "],lb1)
+   where fr = free (Lambda is e)
+         g  = length fr
+         n  = length is
+         beta' = modifyglob (modifyloc undef is (-1) (-)) fr 1   
+         (ce,lb1) = v_code e beta' 0 (lb+2) 
+c_code (List []) beta kp n = (["nil"],n)
+c_code (List es) beta kp n = v_code (List es) beta kp n
+c_code e beta kp n = 
+   (pushfree fr beta kp ++ 
+   ["mkvec " ++ show(g),"ldl " ++ show(n),"mkclos","ujmp " ++ show(n+1),show(n) ++ ": "] ++
+   ce ++ ["update",show(n+1) ++ ": "],n1)
+   where fr = free e
+         g  = length fr
+         beta' = modifyglob undef fr 1
+         (ce,n1) = v_code e beta' 0 (n+2)
+
+------------------------------------------------------------------------------
+
+getvar :: Eq Binding => Ident -> Env -> Int -> P_prog
+getvar x beta kp = let (p,i) = beta(x)
+                   in if p == LOC then ["pushloc " ++ show(kp-i)]
+                                  else ["pushglob " ++ show(i)]
+
+pushfree :: [Ident] -> Env -> Int -> P_prog
+pushfree [] beta kp     = []
+pushfree (x:xs) beta kp = (getvar x beta kp) ++ (pushfree xs beta (kp+1))
+
+modify :: Env -> Ident -> LamaPosition -> Env
+modify env x pos = env'
+                   where env' y | x==y       = pos
+                                | otherwise  = env y
+
+modifyloc :: Env -> [Ident] -> Int -> (Int -> Int -> Int) -> Env
+modifyloc env [] _  _         = env
+modifyloc env (x:xs) pos next = 
+   modifyloc (modify env x (LOC,pos)) xs (pos `next` 1) next
+
+modifyglob :: Env -> [Ident] -> Int -> Env 
+modifyglob env [] start     = env 
+modifyglob env (x:xs) start = modifyglob (modify env x (GLOB,start)) xs (start+1)
+

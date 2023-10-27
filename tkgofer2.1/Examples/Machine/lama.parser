@@ -1,0 +1,1944 @@
+data SLR_val type_Expr type_Variable type_IdentList type_Decl type_Decls type_RelExpr type_AddExpr type_MulExpr type_PfxExpr type_AppExpr type_Atomic type_List type_ExprList type_terminal inputType
+  = Terminal_val_ type_terminal
+  | Parse_Error Int inputType
+  | Expr_val type_Expr
+  | Variable_val type_Variable
+  | IdentList_val type_IdentList
+  | Decl_val type_Decl
+  | Decls_val type_Decls
+  | RelExpr_val type_RelExpr
+  | AddExpr_val type_AddExpr
+  | MulExpr_val type_MulExpr
+  | PfxExpr_val type_PfxExpr
+  | AppExpr_val type_AppExpr
+  | Atomic_val type_Atomic
+  | List_val type_List
+  | ExprList_val type_ExprList
+
+data Loop a b = Loop (a -> [Loop a b]-> b)
+
+num_Expr = 1
+num_Variable = 2
+num_IdentList = 3
+num_Decl = 4
+num_Decls = 5
+num_RelExpr = 6
+num_AddExpr = 7
+num_MulExpr = 8
+num_PfxExpr = 9
+num_AppExpr = 10
+num_Atomic = 11
+num_List = 12
+num_ExprList = 13
+
+parse text = get_SLR_val (parse_state1 [Loop go_to_1] [] (scan text))
+
+get_SLR_val val
+  = case val of {
+     Expr_val root_val -> root_val;
+     Parse_Error state input -> parse_error state input}
+
+parse_state1 states stack []
+  = Parse_Error 1 []
+
+parse_state1 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == lambda -> parse_state46 (Loop go_to_46 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ifT -> parse_state50 (Loop go_to_50 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == letrecT -> parse_state56 (Loop go_to_56 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == tailT -> parse_state24 (Loop go_to_24 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == headT -> parse_state36 (Loop go_to_36 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == isNilT -> parse_state38 (Loop go_to_38 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == notT -> parse_state40 (Loop go_to_40 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == negT -> parse_state42 (Loop go_to_42 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 1 input
+
+
+parse_state2 states stack []
+  = head stack
+
+parse_state2 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     _ -> Parse_Error 2 input
+
+
+parse_state3 states stack []
+  = reduce_30 states stack []
+
+parse_state3 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_30 states stack input
+     tok | tok == elseT -> reduce_30 states stack input
+     tok | tok == inT -> reduce_30 states stack input
+     tok | tok == ident -> reduce_30 states stack input
+     tok | tok == semic -> reduce_30 states stack input
+     tok | tok == equals -> reduce_30 states stack input
+     tok | tok == minus -> reduce_30 states stack input
+     tok | tok == plus -> reduce_30 states stack input
+     tok | tok == consT -> reduce_30 states stack input
+     tok | tok == divide -> reduce_30 states stack input
+     tok | tok == times -> reduce_30 states stack input
+     tok | tok == lpar -> reduce_30 states stack input
+     tok | tok == rpar -> reduce_30 states stack input
+     tok | tok == nilT -> reduce_30 states stack input
+     tok | tok == falseT -> reduce_30 states stack input
+     tok | tok == trueT -> reduce_30 states stack input
+     tok | tok == integer -> reduce_30 states stack input
+     tok | tok == lbra -> reduce_30 states stack input
+     tok | tok == rbra -> reduce_30 states stack input
+     tok | tok == comma -> reduce_30 states stack input
+     _ -> Parse_Error 3 input
+
+
+parse_state4 states stack []
+  = reduce_1 states stack []
+
+parse_state4 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_1 states stack input
+     tok | tok == elseT -> reduce_1 states stack input
+     tok | tok == inT -> reduce_1 states stack input
+     tok | tok == semic -> reduce_1 states stack input
+     tok | tok == equals -> parse_state5 (Loop go_to_5 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == rpar -> reduce_1 states stack input
+     tok | tok == rbra -> reduce_1 states stack input
+     tok | tok == comma -> reduce_1 states stack input
+     _ -> Parse_Error 4 input
+
+
+parse_state5 states stack []
+  = Parse_Error 5 []
+
+parse_state5 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == tailT -> parse_state24 (Loop go_to_24 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == headT -> parse_state36 (Loop go_to_36 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == isNilT -> parse_state38 (Loop go_to_38 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == notT -> parse_state40 (Loop go_to_40 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == negT -> parse_state42 (Loop go_to_42 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 5 input
+
+
+parse_state6 states stack []
+  = reduce_12 states stack []
+
+parse_state6 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_12 states stack input
+     tok | tok == elseT -> reduce_12 states stack input
+     tok | tok == inT -> reduce_12 states stack input
+     tok | tok == semic -> reduce_12 states stack input
+     tok | tok == equals -> reduce_12 states stack input
+     tok | tok == minus -> parse_state7 (Loop go_to_7 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == plus -> parse_state19 (Loop go_to_19 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == rpar -> reduce_12 states stack input
+     tok | tok == rbra -> reduce_12 states stack input
+     tok | tok == comma -> reduce_12 states stack input
+     _ -> Parse_Error 6 input
+
+
+parse_state7 states stack []
+  = Parse_Error 7 []
+
+parse_state7 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == tailT -> parse_state24 (Loop go_to_24 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == headT -> parse_state36 (Loop go_to_36 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == isNilT -> parse_state38 (Loop go_to_38 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == notT -> parse_state40 (Loop go_to_40 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == negT -> parse_state42 (Loop go_to_42 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 7 input
+
+
+parse_state8 states stack []
+  = reduce_14 states stack []
+
+parse_state8 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_14 states stack input
+     tok | tok == elseT -> reduce_14 states stack input
+     tok | tok == inT -> reduce_14 states stack input
+     tok | tok == semic -> reduce_14 states stack input
+     tok | tok == equals -> reduce_14 states stack input
+     tok | tok == minus -> reduce_14 states stack input
+     tok | tok == plus -> reduce_14 states stack input
+     tok | tok == consT -> parse_state9 (Loop go_to_9 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == divide -> parse_state21 (Loop go_to_21 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == times -> parse_state34 (Loop go_to_34 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == rpar -> reduce_14 states stack input
+     tok | tok == rbra -> reduce_14 states stack input
+     tok | tok == comma -> reduce_14 states stack input
+     _ -> Parse_Error 8 input
+
+
+parse_state9 states stack []
+  = Parse_Error 9 []
+
+parse_state9 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == tailT -> parse_state24 (Loop go_to_24 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == headT -> parse_state36 (Loop go_to_36 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == isNilT -> parse_state38 (Loop go_to_38 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == notT -> parse_state40 (Loop go_to_40 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == negT -> parse_state42 (Loop go_to_42 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 9 input
+
+
+parse_state10 states stack []
+  = reduce_17 states stack []
+
+parse_state10 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_17 states stack input
+     tok | tok == elseT -> reduce_17 states stack input
+     tok | tok == inT -> reduce_17 states stack input
+     tok | tok == semic -> reduce_17 states stack input
+     tok | tok == equals -> reduce_17 states stack input
+     tok | tok == minus -> reduce_17 states stack input
+     tok | tok == plus -> reduce_17 states stack input
+     tok | tok == consT -> reduce_17 states stack input
+     tok | tok == divide -> reduce_17 states stack input
+     tok | tok == times -> reduce_17 states stack input
+     tok | tok == rpar -> reduce_17 states stack input
+     tok | tok == rbra -> reduce_17 states stack input
+     tok | tok == comma -> reduce_17 states stack input
+     _ -> Parse_Error 10 input
+
+
+parse_state11 states stack []
+  = reduce_20 states stack []
+
+parse_state11 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_20 states stack input
+     tok | tok == elseT -> reduce_20 states stack input
+     tok | tok == inT -> reduce_20 states stack input
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == semic -> reduce_20 states stack input
+     tok | tok == equals -> reduce_20 states stack input
+     tok | tok == minus -> reduce_20 states stack input
+     tok | tok == plus -> reduce_20 states stack input
+     tok | tok == consT -> reduce_20 states stack input
+     tok | tok == divide -> reduce_20 states stack input
+     tok | tok == times -> reduce_20 states stack input
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == rpar -> reduce_20 states stack input
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == rbra -> reduce_20 states stack input
+     tok | tok == comma -> reduce_20 states stack input
+     _ -> Parse_Error 11 input
+
+
+parse_state12 states stack []
+  = reduce_27 states stack []
+
+parse_state12 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_27 states stack input
+     tok | tok == elseT -> reduce_27 states stack input
+     tok | tok == inT -> reduce_27 states stack input
+     tok | tok == ident -> reduce_27 states stack input
+     tok | tok == semic -> reduce_27 states stack input
+     tok | tok == equals -> reduce_27 states stack input
+     tok | tok == minus -> reduce_27 states stack input
+     tok | tok == plus -> reduce_27 states stack input
+     tok | tok == consT -> reduce_27 states stack input
+     tok | tok == divide -> reduce_27 states stack input
+     tok | tok == times -> reduce_27 states stack input
+     tok | tok == lpar -> reduce_27 states stack input
+     tok | tok == rpar -> reduce_27 states stack input
+     tok | tok == nilT -> reduce_27 states stack input
+     tok | tok == falseT -> reduce_27 states stack input
+     tok | tok == trueT -> reduce_27 states stack input
+     tok | tok == integer -> reduce_27 states stack input
+     tok | tok == lbra -> reduce_27 states stack input
+     tok | tok == rbra -> reduce_27 states stack input
+     tok | tok == comma -> reduce_27 states stack input
+     _ -> Parse_Error 12 input
+
+
+parse_state13 states stack []
+  = reduce_29 states stack []
+
+parse_state13 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_29 states stack input
+     tok | tok == elseT -> reduce_29 states stack input
+     tok | tok == inT -> reduce_29 states stack input
+     tok | tok == ident -> reduce_29 states stack input
+     tok | tok == semic -> reduce_29 states stack input
+     tok | tok == equals -> reduce_29 states stack input
+     tok | tok == minus -> reduce_29 states stack input
+     tok | tok == plus -> reduce_29 states stack input
+     tok | tok == consT -> reduce_29 states stack input
+     tok | tok == divide -> reduce_29 states stack input
+     tok | tok == times -> reduce_29 states stack input
+     tok | tok == lpar -> reduce_29 states stack input
+     tok | tok == rpar -> reduce_29 states stack input
+     tok | tok == nilT -> reduce_29 states stack input
+     tok | tok == falseT -> reduce_29 states stack input
+     tok | tok == trueT -> reduce_29 states stack input
+     tok | tok == integer -> reduce_29 states stack input
+     tok | tok == lbra -> reduce_29 states stack input
+     tok | tok == rbra -> reduce_29 states stack input
+     tok | tok == comma -> reduce_29 states stack input
+     _ -> Parse_Error 13 input
+
+
+parse_state14 states stack []
+  = reduce_5 states stack []
+
+parse_state14 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_5 states stack input
+     tok | tok == elseT -> reduce_5 states stack input
+     tok | tok == inT -> reduce_5 states stack input
+     tok | tok == ident -> reduce_5 states stack input
+     tok | tok == semic -> reduce_5 states stack input
+     tok | tok == equals -> reduce_5 states stack input
+     tok | tok == minus -> reduce_5 states stack input
+     tok | tok == plus -> reduce_5 states stack input
+     tok | tok == consT -> reduce_5 states stack input
+     tok | tok == divide -> reduce_5 states stack input
+     tok | tok == times -> reduce_5 states stack input
+     tok | tok == lpar -> reduce_5 states stack input
+     tok | tok == rpar -> reduce_5 states stack input
+     tok | tok == nilT -> reduce_5 states stack input
+     tok | tok == falseT -> reduce_5 states stack input
+     tok | tok == trueT -> reduce_5 states stack input
+     tok | tok == integer -> reduce_5 states stack input
+     tok | tok == lbra -> reduce_5 states stack input
+     tok | tok == rbra -> reduce_5 states stack input
+     tok | tok == comma -> reduce_5 states stack input
+     _ -> Parse_Error 14 input
+
+
+parse_state15 states stack []
+  = Parse_Error 15 []
+
+parse_state15 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == lambda -> parse_state46 (Loop go_to_46 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ifT -> parse_state50 (Loop go_to_50 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == letrecT -> parse_state56 (Loop go_to_56 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == tailT -> parse_state24 (Loop go_to_24 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == headT -> parse_state36 (Loop go_to_36 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == isNilT -> parse_state38 (Loop go_to_38 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == notT -> parse_state40 (Loop go_to_40 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == negT -> parse_state42 (Loop go_to_42 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 15 input
+
+
+parse_state16 states stack []
+  = Parse_Error 16 []
+
+parse_state16 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == rpar -> parse_state17 (Loop go_to_17 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 16 input
+
+
+parse_state17 states stack []
+  = reduce_28 states stack []
+
+parse_state17 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_28 states stack input
+     tok | tok == elseT -> reduce_28 states stack input
+     tok | tok == inT -> reduce_28 states stack input
+     tok | tok == ident -> reduce_28 states stack input
+     tok | tok == semic -> reduce_28 states stack input
+     tok | tok == equals -> reduce_28 states stack input
+     tok | tok == minus -> reduce_28 states stack input
+     tok | tok == plus -> reduce_28 states stack input
+     tok | tok == consT -> reduce_28 states stack input
+     tok | tok == divide -> reduce_28 states stack input
+     tok | tok == times -> reduce_28 states stack input
+     tok | tok == lpar -> reduce_28 states stack input
+     tok | tok == rpar -> reduce_28 states stack input
+     tok | tok == nilT -> reduce_28 states stack input
+     tok | tok == falseT -> reduce_28 states stack input
+     tok | tok == trueT -> reduce_28 states stack input
+     tok | tok == integer -> reduce_28 states stack input
+     tok | tok == lbra -> reduce_28 states stack input
+     tok | tok == rbra -> reduce_28 states stack input
+     tok | tok == comma -> reduce_28 states stack input
+     _ -> Parse_Error 17 input
+
+
+parse_state18 states stack []
+  = reduce_11 states stack []
+
+parse_state18 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_11 states stack input
+     tok | tok == elseT -> reduce_11 states stack input
+     tok | tok == inT -> reduce_11 states stack input
+     tok | tok == semic -> reduce_11 states stack input
+     tok | tok == equals -> reduce_11 states stack input
+     tok | tok == minus -> parse_state7 (Loop go_to_7 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == plus -> parse_state19 (Loop go_to_19 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == rpar -> reduce_11 states stack input
+     tok | tok == rbra -> reduce_11 states stack input
+     tok | tok == comma -> reduce_11 states stack input
+     _ -> Parse_Error 18 input
+
+
+parse_state19 states stack []
+  = Parse_Error 19 []
+
+parse_state19 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == tailT -> parse_state24 (Loop go_to_24 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == headT -> parse_state36 (Loop go_to_36 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == isNilT -> parse_state38 (Loop go_to_38 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == notT -> parse_state40 (Loop go_to_40 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == negT -> parse_state42 (Loop go_to_42 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 19 input
+
+
+parse_state20 states stack []
+  = reduce_15 states stack []
+
+parse_state20 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_15 states stack input
+     tok | tok == elseT -> reduce_15 states stack input
+     tok | tok == inT -> reduce_15 states stack input
+     tok | tok == semic -> reduce_15 states stack input
+     tok | tok == equals -> reduce_15 states stack input
+     tok | tok == minus -> reduce_15 states stack input
+     tok | tok == plus -> reduce_15 states stack input
+     tok | tok == consT -> parse_state9 (Loop go_to_9 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == divide -> parse_state21 (Loop go_to_21 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == times -> parse_state34 (Loop go_to_34 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == rpar -> reduce_15 states stack input
+     tok | tok == rbra -> reduce_15 states stack input
+     tok | tok == comma -> reduce_15 states stack input
+     _ -> Parse_Error 20 input
+
+
+parse_state21 states stack []
+  = Parse_Error 21 []
+
+parse_state21 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == tailT -> parse_state24 (Loop go_to_24 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == headT -> parse_state36 (Loop go_to_36 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == isNilT -> parse_state38 (Loop go_to_38 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == notT -> parse_state40 (Loop go_to_40 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == negT -> parse_state42 (Loop go_to_42 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 21 input
+
+
+parse_state22 states stack []
+  = reduce_18 states stack []
+
+parse_state22 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_18 states stack input
+     tok | tok == elseT -> reduce_18 states stack input
+     tok | tok == inT -> reduce_18 states stack input
+     tok | tok == semic -> reduce_18 states stack input
+     tok | tok == equals -> reduce_18 states stack input
+     tok | tok == minus -> reduce_18 states stack input
+     tok | tok == plus -> reduce_18 states stack input
+     tok | tok == consT -> reduce_18 states stack input
+     tok | tok == divide -> reduce_18 states stack input
+     tok | tok == times -> reduce_18 states stack input
+     tok | tok == rpar -> reduce_18 states stack input
+     tok | tok == rbra -> reduce_18 states stack input
+     tok | tok == comma -> reduce_18 states stack input
+     _ -> Parse_Error 22 input
+
+
+parse_state23 states stack []
+  = reduce_26 states stack []
+
+parse_state23 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_26 states stack input
+     tok | tok == elseT -> reduce_26 states stack input
+     tok | tok == inT -> reduce_26 states stack input
+     tok | tok == ident -> reduce_26 states stack input
+     tok | tok == semic -> reduce_26 states stack input
+     tok | tok == equals -> reduce_26 states stack input
+     tok | tok == minus -> reduce_26 states stack input
+     tok | tok == plus -> reduce_26 states stack input
+     tok | tok == consT -> reduce_26 states stack input
+     tok | tok == divide -> reduce_26 states stack input
+     tok | tok == times -> reduce_26 states stack input
+     tok | tok == lpar -> reduce_26 states stack input
+     tok | tok == rpar -> reduce_26 states stack input
+     tok | tok == nilT -> reduce_26 states stack input
+     tok | tok == falseT -> reduce_26 states stack input
+     tok | tok == trueT -> reduce_26 states stack input
+     tok | tok == integer -> reduce_26 states stack input
+     tok | tok == lbra -> reduce_26 states stack input
+     tok | tok == rbra -> reduce_26 states stack input
+     tok | tok == comma -> reduce_26 states stack input
+     _ -> Parse_Error 23 input
+
+
+parse_state24 states stack []
+  = Parse_Error 24 []
+
+parse_state24 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 24 input
+
+
+parse_state25 states stack []
+  = reduce_21 states stack []
+
+parse_state25 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_21 states stack input
+     tok | tok == elseT -> reduce_21 states stack input
+     tok | tok == inT -> reduce_21 states stack input
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == semic -> reduce_21 states stack input
+     tok | tok == equals -> reduce_21 states stack input
+     tok | tok == minus -> reduce_21 states stack input
+     tok | tok == plus -> reduce_21 states stack input
+     tok | tok == consT -> reduce_21 states stack input
+     tok | tok == divide -> reduce_21 states stack input
+     tok | tok == times -> reduce_21 states stack input
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == rpar -> reduce_21 states stack input
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == rbra -> reduce_21 states stack input
+     tok | tok == comma -> reduce_21 states stack input
+     _ -> Parse_Error 25 input
+
+
+parse_state26 states stack []
+  = reduce_31 states stack []
+
+parse_state26 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_31 states stack input
+     tok | tok == elseT -> reduce_31 states stack input
+     tok | tok == inT -> reduce_31 states stack input
+     tok | tok == ident -> reduce_31 states stack input
+     tok | tok == semic -> reduce_31 states stack input
+     tok | tok == equals -> reduce_31 states stack input
+     tok | tok == minus -> reduce_31 states stack input
+     tok | tok == plus -> reduce_31 states stack input
+     tok | tok == consT -> reduce_31 states stack input
+     tok | tok == divide -> reduce_31 states stack input
+     tok | tok == times -> reduce_31 states stack input
+     tok | tok == lpar -> reduce_31 states stack input
+     tok | tok == rpar -> reduce_31 states stack input
+     tok | tok == nilT -> reduce_31 states stack input
+     tok | tok == falseT -> reduce_31 states stack input
+     tok | tok == trueT -> reduce_31 states stack input
+     tok | tok == integer -> reduce_31 states stack input
+     tok | tok == lbra -> reduce_31 states stack input
+     tok | tok == rbra -> reduce_31 states stack input
+     tok | tok == comma -> reduce_31 states stack input
+     _ -> Parse_Error 26 input
+
+
+parse_state27 states stack []
+  = reduce_32 states stack []
+
+parse_state27 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_32 states stack input
+     tok | tok == elseT -> reduce_32 states stack input
+     tok | tok == inT -> reduce_32 states stack input
+     tok | tok == ident -> reduce_32 states stack input
+     tok | tok == semic -> reduce_32 states stack input
+     tok | tok == equals -> reduce_32 states stack input
+     tok | tok == minus -> reduce_32 states stack input
+     tok | tok == plus -> reduce_32 states stack input
+     tok | tok == consT -> reduce_32 states stack input
+     tok | tok == divide -> reduce_32 states stack input
+     tok | tok == times -> reduce_32 states stack input
+     tok | tok == lpar -> reduce_32 states stack input
+     tok | tok == rpar -> reduce_32 states stack input
+     tok | tok == nilT -> reduce_32 states stack input
+     tok | tok == falseT -> reduce_32 states stack input
+     tok | tok == trueT -> reduce_32 states stack input
+     tok | tok == integer -> reduce_32 states stack input
+     tok | tok == lbra -> reduce_32 states stack input
+     tok | tok == rbra -> reduce_32 states stack input
+     tok | tok == comma -> reduce_32 states stack input
+     _ -> Parse_Error 27 input
+
+
+parse_state28 states stack []
+  = reduce_33 states stack []
+
+parse_state28 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_33 states stack input
+     tok | tok == elseT -> reduce_33 states stack input
+     tok | tok == inT -> reduce_33 states stack input
+     tok | tok == ident -> reduce_33 states stack input
+     tok | tok == semic -> reduce_33 states stack input
+     tok | tok == equals -> reduce_33 states stack input
+     tok | tok == minus -> reduce_33 states stack input
+     tok | tok == plus -> reduce_33 states stack input
+     tok | tok == consT -> reduce_33 states stack input
+     tok | tok == divide -> reduce_33 states stack input
+     tok | tok == times -> reduce_33 states stack input
+     tok | tok == lpar -> reduce_33 states stack input
+     tok | tok == rpar -> reduce_33 states stack input
+     tok | tok == nilT -> reduce_33 states stack input
+     tok | tok == falseT -> reduce_33 states stack input
+     tok | tok == trueT -> reduce_33 states stack input
+     tok | tok == integer -> reduce_33 states stack input
+     tok | tok == lbra -> reduce_33 states stack input
+     tok | tok == rbra -> reduce_33 states stack input
+     tok | tok == comma -> reduce_33 states stack input
+     _ -> Parse_Error 28 input
+
+
+parse_state29 states stack []
+  = reduce_34 states stack []
+
+parse_state29 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_34 states stack input
+     tok | tok == elseT -> reduce_34 states stack input
+     tok | tok == inT -> reduce_34 states stack input
+     tok | tok == ident -> reduce_34 states stack input
+     tok | tok == semic -> reduce_34 states stack input
+     tok | tok == equals -> reduce_34 states stack input
+     tok | tok == minus -> reduce_34 states stack input
+     tok | tok == plus -> reduce_34 states stack input
+     tok | tok == consT -> reduce_34 states stack input
+     tok | tok == divide -> reduce_34 states stack input
+     tok | tok == times -> reduce_34 states stack input
+     tok | tok == lpar -> reduce_34 states stack input
+     tok | tok == rpar -> reduce_34 states stack input
+     tok | tok == nilT -> reduce_34 states stack input
+     tok | tok == falseT -> reduce_34 states stack input
+     tok | tok == trueT -> reduce_34 states stack input
+     tok | tok == integer -> reduce_34 states stack input
+     tok | tok == lbra -> reduce_34 states stack input
+     tok | tok == rbra -> reduce_34 states stack input
+     tok | tok == comma -> reduce_34 states stack input
+     _ -> Parse_Error 29 input
+
+
+parse_state30 states stack []
+  = Parse_Error 30 []
+
+parse_state30 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == lambda -> parse_state46 (Loop go_to_46 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ifT -> parse_state50 (Loop go_to_50 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == letrecT -> parse_state56 (Loop go_to_56 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == tailT -> parse_state24 (Loop go_to_24 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == headT -> parse_state36 (Loop go_to_36 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == isNilT -> parse_state38 (Loop go_to_38 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == notT -> parse_state40 (Loop go_to_40 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == negT -> parse_state42 (Loop go_to_42 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 30 input
+
+
+parse_state31 states stack []
+  = Parse_Error 31 []
+
+parse_state31 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == rbra -> reduce_36 states stack input
+     tok | tok == comma -> parse_state32 (Loop go_to_32 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 31 input
+
+
+parse_state32 states stack []
+  = Parse_Error 32 []
+
+parse_state32 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == lambda -> parse_state46 (Loop go_to_46 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ifT -> parse_state50 (Loop go_to_50 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == letrecT -> parse_state56 (Loop go_to_56 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == tailT -> parse_state24 (Loop go_to_24 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == headT -> parse_state36 (Loop go_to_36 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == isNilT -> parse_state38 (Loop go_to_38 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == notT -> parse_state40 (Loop go_to_40 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == negT -> parse_state42 (Loop go_to_42 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 32 input
+
+
+parse_state33 states stack []
+  = reduce_13 states stack []
+
+parse_state33 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_13 states stack input
+     tok | tok == elseT -> reduce_13 states stack input
+     tok | tok == inT -> reduce_13 states stack input
+     tok | tok == semic -> reduce_13 states stack input
+     tok | tok == equals -> reduce_13 states stack input
+     tok | tok == minus -> reduce_13 states stack input
+     tok | tok == plus -> reduce_13 states stack input
+     tok | tok == consT -> parse_state9 (Loop go_to_9 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == divide -> parse_state21 (Loop go_to_21 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == times -> parse_state34 (Loop go_to_34 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == rpar -> reduce_13 states stack input
+     tok | tok == rbra -> reduce_13 states stack input
+     tok | tok == comma -> reduce_13 states stack input
+     _ -> Parse_Error 33 input
+
+
+parse_state34 states stack []
+  = Parse_Error 34 []
+
+parse_state34 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == tailT -> parse_state24 (Loop go_to_24 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == headT -> parse_state36 (Loop go_to_36 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == isNilT -> parse_state38 (Loop go_to_38 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == notT -> parse_state40 (Loop go_to_40 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == negT -> parse_state42 (Loop go_to_42 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 34 input
+
+
+parse_state35 states stack []
+  = reduce_19 states stack []
+
+parse_state35 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_19 states stack input
+     tok | tok == elseT -> reduce_19 states stack input
+     tok | tok == inT -> reduce_19 states stack input
+     tok | tok == semic -> reduce_19 states stack input
+     tok | tok == equals -> reduce_19 states stack input
+     tok | tok == minus -> reduce_19 states stack input
+     tok | tok == plus -> reduce_19 states stack input
+     tok | tok == consT -> reduce_19 states stack input
+     tok | tok == divide -> reduce_19 states stack input
+     tok | tok == times -> reduce_19 states stack input
+     tok | tok == rpar -> reduce_19 states stack input
+     tok | tok == rbra -> reduce_19 states stack input
+     tok | tok == comma -> reduce_19 states stack input
+     _ -> Parse_Error 35 input
+
+
+parse_state36 states stack []
+  = Parse_Error 36 []
+
+parse_state36 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 36 input
+
+
+parse_state37 states stack []
+  = reduce_22 states stack []
+
+parse_state37 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_22 states stack input
+     tok | tok == elseT -> reduce_22 states stack input
+     tok | tok == inT -> reduce_22 states stack input
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == semic -> reduce_22 states stack input
+     tok | tok == equals -> reduce_22 states stack input
+     tok | tok == minus -> reduce_22 states stack input
+     tok | tok == plus -> reduce_22 states stack input
+     tok | tok == consT -> reduce_22 states stack input
+     tok | tok == divide -> reduce_22 states stack input
+     tok | tok == times -> reduce_22 states stack input
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == rpar -> reduce_22 states stack input
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == rbra -> reduce_22 states stack input
+     tok | tok == comma -> reduce_22 states stack input
+     _ -> Parse_Error 37 input
+
+
+parse_state38 states stack []
+  = Parse_Error 38 []
+
+parse_state38 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 38 input
+
+
+parse_state39 states stack []
+  = reduce_23 states stack []
+
+parse_state39 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_23 states stack input
+     tok | tok == elseT -> reduce_23 states stack input
+     tok | tok == inT -> reduce_23 states stack input
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == semic -> reduce_23 states stack input
+     tok | tok == equals -> reduce_23 states stack input
+     tok | tok == minus -> reduce_23 states stack input
+     tok | tok == plus -> reduce_23 states stack input
+     tok | tok == consT -> reduce_23 states stack input
+     tok | tok == divide -> reduce_23 states stack input
+     tok | tok == times -> reduce_23 states stack input
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == rpar -> reduce_23 states stack input
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == rbra -> reduce_23 states stack input
+     tok | tok == comma -> reduce_23 states stack input
+     _ -> Parse_Error 39 input
+
+
+parse_state40 states stack []
+  = Parse_Error 40 []
+
+parse_state40 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 40 input
+
+
+parse_state41 states stack []
+  = reduce_24 states stack []
+
+parse_state41 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_24 states stack input
+     tok | tok == elseT -> reduce_24 states stack input
+     tok | tok == inT -> reduce_24 states stack input
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == semic -> reduce_24 states stack input
+     tok | tok == equals -> reduce_24 states stack input
+     tok | tok == minus -> reduce_24 states stack input
+     tok | tok == plus -> reduce_24 states stack input
+     tok | tok == consT -> reduce_24 states stack input
+     tok | tok == divide -> reduce_24 states stack input
+     tok | tok == times -> reduce_24 states stack input
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == rpar -> reduce_24 states stack input
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == rbra -> reduce_24 states stack input
+     tok | tok == comma -> reduce_24 states stack input
+     _ -> Parse_Error 41 input
+
+
+parse_state42 states stack []
+  = Parse_Error 42 []
+
+parse_state42 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 42 input
+
+
+parse_state43 states stack []
+  = reduce_25 states stack []
+
+parse_state43 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_25 states stack input
+     tok | tok == elseT -> reduce_25 states stack input
+     tok | tok == inT -> reduce_25 states stack input
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == semic -> reduce_25 states stack input
+     tok | tok == equals -> reduce_25 states stack input
+     tok | tok == minus -> reduce_25 states stack input
+     tok | tok == plus -> reduce_25 states stack input
+     tok | tok == consT -> reduce_25 states stack input
+     tok | tok == divide -> reduce_25 states stack input
+     tok | tok == times -> reduce_25 states stack input
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == rpar -> reduce_25 states stack input
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == rbra -> reduce_25 states stack input
+     tok | tok == comma -> reduce_25 states stack input
+     _ -> Parse_Error 43 input
+
+
+parse_state44 states stack []
+  = reduce_16 states stack []
+
+parse_state44 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_16 states stack input
+     tok | tok == elseT -> reduce_16 states stack input
+     tok | tok == inT -> reduce_16 states stack input
+     tok | tok == semic -> reduce_16 states stack input
+     tok | tok == equals -> reduce_16 states stack input
+     tok | tok == minus -> reduce_16 states stack input
+     tok | tok == plus -> reduce_16 states stack input
+     tok | tok == consT -> reduce_16 states stack input
+     tok | tok == divide -> reduce_16 states stack input
+     tok | tok == times -> reduce_16 states stack input
+     tok | tok == rpar -> reduce_16 states stack input
+     tok | tok == rbra -> reduce_16 states stack input
+     tok | tok == comma -> reduce_16 states stack input
+     _ -> Parse_Error 44 input
+
+
+parse_state45 states stack []
+  = Parse_Error 45 []
+
+parse_state45 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == rbra -> reduce_37 states stack input
+     _ -> Parse_Error 45 input
+
+
+parse_state46 states stack []
+  = Parse_Error 46 []
+
+parse_state46 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == ident -> parse_state66 (Loop go_to_66 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 46 input
+
+
+parse_state47 states stack []
+  = Parse_Error 47 []
+
+parse_state47 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == dot -> parse_state48 (Loop go_to_48 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 47 input
+
+
+parse_state48 states stack []
+  = Parse_Error 48 []
+
+parse_state48 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == lambda -> parse_state46 (Loop go_to_46 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ifT -> parse_state50 (Loop go_to_50 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == letrecT -> parse_state56 (Loop go_to_56 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == tailT -> parse_state24 (Loop go_to_24 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == headT -> parse_state36 (Loop go_to_36 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == isNilT -> parse_state38 (Loop go_to_38 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == notT -> parse_state40 (Loop go_to_40 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == negT -> parse_state42 (Loop go_to_42 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 48 input
+
+
+parse_state49 states stack []
+  = reduce_2 states stack []
+
+parse_state49 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_2 states stack input
+     tok | tok == elseT -> reduce_2 states stack input
+     tok | tok == inT -> reduce_2 states stack input
+     tok | tok == semic -> reduce_2 states stack input
+     tok | tok == rpar -> reduce_2 states stack input
+     tok | tok == rbra -> reduce_2 states stack input
+     tok | tok == comma -> reduce_2 states stack input
+     _ -> Parse_Error 49 input
+
+
+parse_state50 states stack []
+  = Parse_Error 50 []
+
+parse_state50 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == lambda -> parse_state46 (Loop go_to_46 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ifT -> parse_state50 (Loop go_to_50 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == letrecT -> parse_state56 (Loop go_to_56 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == tailT -> parse_state24 (Loop go_to_24 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == headT -> parse_state36 (Loop go_to_36 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == isNilT -> parse_state38 (Loop go_to_38 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == notT -> parse_state40 (Loop go_to_40 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == negT -> parse_state42 (Loop go_to_42 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 50 input
+
+
+parse_state51 states stack []
+  = Parse_Error 51 []
+
+parse_state51 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> parse_state52 (Loop go_to_52 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 51 input
+
+
+parse_state52 states stack []
+  = Parse_Error 52 []
+
+parse_state52 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == lambda -> parse_state46 (Loop go_to_46 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ifT -> parse_state50 (Loop go_to_50 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == letrecT -> parse_state56 (Loop go_to_56 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == tailT -> parse_state24 (Loop go_to_24 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == headT -> parse_state36 (Loop go_to_36 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == isNilT -> parse_state38 (Loop go_to_38 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == notT -> parse_state40 (Loop go_to_40 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == negT -> parse_state42 (Loop go_to_42 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 52 input
+
+
+parse_state53 states stack []
+  = Parse_Error 53 []
+
+parse_state53 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == elseT -> parse_state54 (Loop go_to_54 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 53 input
+
+
+parse_state54 states stack []
+  = Parse_Error 54 []
+
+parse_state54 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == lambda -> parse_state46 (Loop go_to_46 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ifT -> parse_state50 (Loop go_to_50 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == letrecT -> parse_state56 (Loop go_to_56 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == tailT -> parse_state24 (Loop go_to_24 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == headT -> parse_state36 (Loop go_to_36 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == isNilT -> parse_state38 (Loop go_to_38 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == notT -> parse_state40 (Loop go_to_40 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == negT -> parse_state42 (Loop go_to_42 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 54 input
+
+
+parse_state55 states stack []
+  = reduce_3 states stack []
+
+parse_state55 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_3 states stack input
+     tok | tok == elseT -> reduce_3 states stack input
+     tok | tok == inT -> reduce_3 states stack input
+     tok | tok == semic -> reduce_3 states stack input
+     tok | tok == rpar -> reduce_3 states stack input
+     tok | tok == rbra -> reduce_3 states stack input
+     tok | tok == comma -> reduce_3 states stack input
+     _ -> Parse_Error 55 input
+
+
+parse_state56 states stack []
+  = Parse_Error 56 []
+
+parse_state56 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == ident -> parse_state60 (Loop go_to_60 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 56 input
+
+
+parse_state57 states stack []
+  = Parse_Error 57 []
+
+parse_state57 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == inT -> reduce_9 states stack input
+     tok | tok == semic -> parse_state58 (Loop go_to_58 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 57 input
+
+
+parse_state58 states stack []
+  = Parse_Error 58 []
+
+parse_state58 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == ident -> parse_state60 (Loop go_to_60 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 58 input
+
+
+parse_state59 states stack []
+  = Parse_Error 59 []
+
+parse_state59 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == inT -> reduce_10 states stack input
+     _ -> Parse_Error 59 input
+
+
+parse_state60 states stack []
+  = Parse_Error 60 []
+
+parse_state60 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == is -> parse_state61 (Loop go_to_61 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 60 input
+
+
+parse_state61 states stack []
+  = Parse_Error 61 []
+
+parse_state61 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == lambda -> parse_state46 (Loop go_to_46 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ifT -> parse_state50 (Loop go_to_50 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == letrecT -> parse_state56 (Loop go_to_56 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == tailT -> parse_state24 (Loop go_to_24 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == headT -> parse_state36 (Loop go_to_36 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == isNilT -> parse_state38 (Loop go_to_38 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == notT -> parse_state40 (Loop go_to_40 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == negT -> parse_state42 (Loop go_to_42 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 61 input
+
+
+parse_state62 states stack []
+  = Parse_Error 62 []
+
+parse_state62 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == inT -> reduce_8 states stack input
+     tok | tok == semic -> reduce_8 states stack input
+     _ -> Parse_Error 62 input
+
+
+parse_state63 states stack []
+  = Parse_Error 63 []
+
+parse_state63 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == inT -> parse_state64 (Loop go_to_64 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 63 input
+
+
+parse_state64 states stack []
+  = Parse_Error 64 []
+
+parse_state64 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == lambda -> parse_state46 (Loop go_to_46 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ifT -> parse_state50 (Loop go_to_50 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == letrecT -> parse_state56 (Loop go_to_56 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == ident -> parse_state14 (Loop go_to_14 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == tailT -> parse_state24 (Loop go_to_24 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == headT -> parse_state36 (Loop go_to_36 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == isNilT -> parse_state38 (Loop go_to_38 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == notT -> parse_state40 (Loop go_to_40 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == negT -> parse_state42 (Loop go_to_42 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lpar -> parse_state15 (Loop go_to_15 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == nilT -> parse_state26 (Loop go_to_26 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == falseT -> parse_state27 (Loop go_to_27 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == trueT -> parse_state28 (Loop go_to_28 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == integer -> parse_state29 (Loop go_to_29 : states) ((Terminal_val_ s_v):stack) rest
+     tok | tok == lbra -> parse_state30 (Loop go_to_30 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 64 input
+
+
+parse_state65 states stack []
+  = reduce_4 states stack []
+
+parse_state65 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_4 states stack input
+     tok | tok == elseT -> reduce_4 states stack input
+     tok | tok == inT -> reduce_4 states stack input
+     tok | tok == semic -> reduce_4 states stack input
+     tok | tok == rpar -> reduce_4 states stack input
+     tok | tok == rbra -> reduce_4 states stack input
+     tok | tok == comma -> reduce_4 states stack input
+     _ -> Parse_Error 65 input
+
+
+parse_state66 states stack []
+  = Parse_Error 66 []
+
+parse_state66 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == dot -> reduce_6 states stack input
+     tok | tok == ident -> parse_state66 (Loop go_to_66 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 66 input
+
+
+parse_state67 states stack []
+  = Parse_Error 67 []
+
+parse_state67 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == dot -> reduce_7 states stack input
+     _ -> Parse_Error 67 input
+
+
+parse_state68 states stack []
+  = Parse_Error 68 []
+
+parse_state68 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == rbra -> parse_state69 (Loop go_to_69 : states) ((Terminal_val_ s_v):stack) rest
+     _ -> Parse_Error 68 input
+
+
+parse_state69 states stack []
+  = reduce_35 states stack []
+
+parse_state69 states stack input@((s_t,s_v,_):rest)
+  = case s_t of
+     tok | tok == thenT -> reduce_35 states stack input
+     tok | tok == elseT -> reduce_35 states stack input
+     tok | tok == inT -> reduce_35 states stack input
+     tok | tok == ident -> reduce_35 states stack input
+     tok | tok == semic -> reduce_35 states stack input
+     tok | tok == equals -> reduce_35 states stack input
+     tok | tok == minus -> reduce_35 states stack input
+     tok | tok == plus -> reduce_35 states stack input
+     tok | tok == consT -> reduce_35 states stack input
+     tok | tok == divide -> reduce_35 states stack input
+     tok | tok == times -> reduce_35 states stack input
+     tok | tok == lpar -> reduce_35 states stack input
+     tok | tok == rpar -> reduce_35 states stack input
+     tok | tok == nilT -> reduce_35 states stack input
+     tok | tok == falseT -> reduce_35 states stack input
+     tok | tok == trueT -> reduce_35 states stack input
+     tok | tok == integer -> reduce_35 states stack input
+     tok | tok == lbra -> reduce_35 states stack input
+     tok | tok == rbra -> reduce_35 states stack input
+     tok | tok == comma -> reduce_35 states stack input
+     _ -> Parse_Error 69 input
+
+
+
+reduce_1 (_:states@(Loop state : _))
+          (RelExpr_val x1 : rest)
+    = state num_Expr states ((Expr_val (\env n -> (x1 env n))) : rest)
+
+reduce_2 (_:_:_:_:states@(Loop state : _))
+          (Expr_val x4 : Terminal_val_ x3 : IdentList_val x2 : Terminal_val_ x1 : rest)
+    = state num_Expr states ((Expr_val (\env n -> compLam env n x2 x4)) : rest)
+
+reduce_3 (_:_:_:_:_:_:states@(Loop state : _))
+          (Expr_val x6 : Terminal_val_ x5 : Expr_val x4 : Terminal_val_ x3 : Expr_val x2 : Terminal_val_ x1 : rest)
+    = state num_Expr states ((Expr_val (\env n -> compCond env n x2 x4 x6)) : rest)
+
+reduce_4 (_:_:_:_:states@(Loop state : _))
+          (Expr_val x4 : Terminal_val_ x3 : Decls_val x2 : Terminal_val_ x1 : rest)
+    = state num_Expr states ((Expr_val (\env n -> compLet env n x2 x4)) : rest)
+
+reduce_5 (_:states@(Loop state : _))
+          (Terminal_val_ x1 : rest)
+    = state num_Variable states ((Variable_val (\env n -> (fetchVar env n x1,n))) : rest)
+
+reduce_6 (_:states@(Loop state : _))
+          (Terminal_val_ x1 : rest)
+    = state num_IdentList states ((IdentList_val (\env n -> compIdent1 env n x1)) : rest)
+
+reduce_7 (_:_:states@(Loop state : _))
+          (IdentList_val x2 : Terminal_val_ x1 : rest)
+    = state num_IdentList states ((IdentList_val (\env n -> compIdent2 env n x1 x2)) : rest)
+
+reduce_8 (_:_:_:states@(Loop state : _))
+          (Expr_val x3 : Terminal_val_ x2 : Terminal_val_ x1 : rest)
+    = state num_Decl states ((Decl_val (([x1],[x3]))) : rest)
+
+reduce_9 (_:states@(Loop state : _))
+          (Decl_val x1 : rest)
+    = state num_Decls states ((Decls_val (x1)) : rest)
+
+reduce_10 (_:_:_:states@(Loop state : _))
+          (Decls_val x3 : Terminal_val_ x2 : Decl_val x1 : rest)
+    = state num_Decls states ((Decls_val (x1 `oconcat` x3)) : rest)
+
+reduce_11 (_:states@(Loop state : _))
+          (AddExpr_val x1 : rest)
+    = state num_RelExpr states ((RelExpr_val (\env n -> (x1 env n))) : rest)
+
+reduce_12 (_:_:_:states@(Loop state : _))
+          (AddExpr_val x3 : Terminal_val_ x2 : RelExpr_val x1 : rest)
+    = state num_RelExpr states ((RelExpr_val (\env n -> compBinOp env n x2 x1 x3)) : rest)
+
+reduce_13 (_:states@(Loop state : _))
+          (MulExpr_val x1 : rest)
+    = state num_AddExpr states ((AddExpr_val (\env n -> (x1 env n))) : rest)
+
+reduce_14 (_:_:_:states@(Loop state : _))
+          (MulExpr_val x3 : Terminal_val_ x2 : AddExpr_val x1 : rest)
+    = state num_AddExpr states ((AddExpr_val (\env n -> compBinOp env n x2 x1 x3)) : rest)
+
+reduce_15 (_:_:_:states@(Loop state : _))
+          (MulExpr_val x3 : Terminal_val_ x2 : AddExpr_val x1 : rest)
+    = state num_AddExpr states ((AddExpr_val (\env n -> compBinOp env n x2 x1 x3)) : rest)
+
+reduce_16 (_:states@(Loop state : _))
+          (PfxExpr_val x1 : rest)
+    = state num_MulExpr states ((MulExpr_val (\env n -> (x1 env n))) : rest)
+
+reduce_17 (_:_:_:states@(Loop state : _))
+          (PfxExpr_val x3 : Terminal_val_ x2 : MulExpr_val x1 : rest)
+    = state num_MulExpr states ((MulExpr_val (\env n -> compBinOp env n x2 x1 x3)) : rest)
+
+reduce_18 (_:_:_:states@(Loop state : _))
+          (PfxExpr_val x3 : Terminal_val_ x2 : MulExpr_val x1 : rest)
+    = state num_MulExpr states ((MulExpr_val (\env n -> compBinOp env n x2 x1 x3)) : rest)
+
+reduce_19 (_:_:_:states@(Loop state : _))
+          (PfxExpr_val x3 : Terminal_val_ x2 : MulExpr_val x1 : rest)
+    = state num_MulExpr states ((MulExpr_val (\env n -> compBinOp env n x2 x1 x3)) : rest)
+
+reduce_20 (_:states@(Loop state : _))
+          (AppExpr_val x1 : rest)
+    = state num_PfxExpr states ((PfxExpr_val (\env n -> (x1 env n))) : rest)
+
+reduce_21 (_:_:states@(Loop state : _))
+          (AppExpr_val x2 : Terminal_val_ x1 : rest)
+    = state num_PfxExpr states ((PfxExpr_val (\env n -> compUnOp env n x1 x2)) : rest)
+
+reduce_22 (_:_:states@(Loop state : _))
+          (AppExpr_val x2 : Terminal_val_ x1 : rest)
+    = state num_PfxExpr states ((PfxExpr_val (\env n -> compUnOp env n x1 x2)) : rest)
+
+reduce_23 (_:_:states@(Loop state : _))
+          (AppExpr_val x2 : Terminal_val_ x1 : rest)
+    = state num_PfxExpr states ((PfxExpr_val (\env n -> compUnOp env n x1 x2)) : rest)
+
+reduce_24 (_:_:states@(Loop state : _))
+          (AppExpr_val x2 : Terminal_val_ x1 : rest)
+    = state num_PfxExpr states ((PfxExpr_val (\env n -> compUnOp env n x1 x2)) : rest)
+
+reduce_25 (_:_:states@(Loop state : _))
+          (AppExpr_val x2 : Terminal_val_ x1 : rest)
+    = state num_PfxExpr states ((PfxExpr_val (\env n -> compUnOp env n x1 x2)) : rest)
+
+reduce_26 (_:states@(Loop state : _))
+          (Atomic_val x1 : rest)
+    = state num_AppExpr states ((AppExpr_val (\env n -> (x1 env n))) : rest)
+
+reduce_27 (_:_:states@(Loop state : _))
+          (Atomic_val x2 : AppExpr_val x1 : rest)
+    = state num_AppExpr states ((AppExpr_val (\env n -> compAppl env n x1 x2)) : rest)
+
+reduce_28 (_:_:_:states@(Loop state : _))
+          (Terminal_val_ x3 : Expr_val x2 : Terminal_val_ x1 : rest)
+    = state num_Atomic states ((Atomic_val (\env n -> (x2 env n))) : rest)
+
+reduce_29 (_:states@(Loop state : _))
+          (List_val x1 : rest)
+    = state num_Atomic states ((Atomic_val (\env n -> (x1 env n))) : rest)
+
+reduce_30 (_:states@(Loop state : _))
+          (Variable_val x1 : rest)
+    = state num_Atomic states ((Atomic_val (\env n -> (x1 env n))) : rest)
+
+reduce_31 (_:states@(Loop state : _))
+          (Terminal_val_ x1 : rest)
+    = state num_Atomic states ((Atomic_val (\_   n -> (List [],n))) : rest)
+
+reduce_32 (_:states@(Loop state : _))
+          (Terminal_val_ x1 : rest)
+    = state num_Atomic states ((Atomic_val (\_   n -> (Basic (Boolean False),n))) : rest)
+
+reduce_33 (_:states@(Loop state : _))
+          (Terminal_val_ x1 : rest)
+    = state num_Atomic states ((Atomic_val (\_   n -> (Basic (Boolean True),n))) : rest)
+
+reduce_34 (_:states@(Loop state : _))
+          (Terminal_val_ x1 : rest)
+    = state num_Atomic states ((Atomic_val (\_   n -> (Basic (Integer (intval x1)),n))) : rest)
+
+reduce_35 (_:_:_:states@(Loop state : _))
+          (Terminal_val_ x3 : ExprList_val x2 : Terminal_val_ x1 : rest)
+    = state num_List states ((List_val (\env n -> compList env n x2)) : rest)
+
+reduce_36 (_:states@(Loop state : _))
+          (Expr_val x1 : rest)
+    = state num_ExprList states ((ExprList_val ([x1])) : rest)
+
+reduce_37 (_:_:_:states@(Loop state : _))
+          (ExprList_val x3 : Terminal_val_ x2 : Expr_val x1 : rest)
+    = state num_ExprList states ((ExprList_val (x1:x3)) : rest)
+
+
+go_to_1 nont states
+   | nont == num_Expr = parse_state2 (Loop go_to_2 : states)
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_RelExpr = parse_state4 (Loop go_to_4 : states)
+   | nont == num_AddExpr = parse_state18 (Loop go_to_18 : states)
+   | nont == num_MulExpr = parse_state33 (Loop go_to_33 : states)
+   | nont == num_PfxExpr = parse_state44 (Loop go_to_44 : states)
+   | nont == num_AppExpr = parse_state11 (Loop go_to_11 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_2 = go_to_2
+
+go_to_3 = go_to_3
+
+go_to_4 = go_to_4
+
+go_to_5 nont states
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_AddExpr = parse_state6 (Loop go_to_6 : states)
+   | nont == num_MulExpr = parse_state33 (Loop go_to_33 : states)
+   | nont == num_PfxExpr = parse_state44 (Loop go_to_44 : states)
+   | nont == num_AppExpr = parse_state11 (Loop go_to_11 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_6 = go_to_6
+
+go_to_7 nont states
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_MulExpr = parse_state8 (Loop go_to_8 : states)
+   | nont == num_PfxExpr = parse_state44 (Loop go_to_44 : states)
+   | nont == num_AppExpr = parse_state11 (Loop go_to_11 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_8 = go_to_8
+
+go_to_9 nont states
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_PfxExpr = parse_state10 (Loop go_to_10 : states)
+   | nont == num_AppExpr = parse_state11 (Loop go_to_11 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_10 = go_to_10
+
+go_to_11 nont states
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_Atomic = parse_state12 (Loop go_to_12 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_12 = go_to_12
+
+go_to_13 = go_to_13
+
+go_to_14 = go_to_14
+
+go_to_15 nont states
+   | nont == num_Expr = parse_state16 (Loop go_to_16 : states)
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_RelExpr = parse_state4 (Loop go_to_4 : states)
+   | nont == num_AddExpr = parse_state18 (Loop go_to_18 : states)
+   | nont == num_MulExpr = parse_state33 (Loop go_to_33 : states)
+   | nont == num_PfxExpr = parse_state44 (Loop go_to_44 : states)
+   | nont == num_AppExpr = parse_state11 (Loop go_to_11 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_16 = go_to_16
+
+go_to_17 = go_to_17
+
+go_to_18 = go_to_18
+
+go_to_19 nont states
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_MulExpr = parse_state20 (Loop go_to_20 : states)
+   | nont == num_PfxExpr = parse_state44 (Loop go_to_44 : states)
+   | nont == num_AppExpr = parse_state11 (Loop go_to_11 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_20 = go_to_20
+
+go_to_21 nont states
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_PfxExpr = parse_state22 (Loop go_to_22 : states)
+   | nont == num_AppExpr = parse_state11 (Loop go_to_11 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_22 = go_to_22
+
+go_to_23 = go_to_23
+
+go_to_24 nont states
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_AppExpr = parse_state25 (Loop go_to_25 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_25 nont states
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_Atomic = parse_state12 (Loop go_to_12 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_26 = go_to_26
+
+go_to_27 = go_to_27
+
+go_to_28 = go_to_28
+
+go_to_29 = go_to_29
+
+go_to_30 nont states
+   | nont == num_Expr = parse_state31 (Loop go_to_31 : states)
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_RelExpr = parse_state4 (Loop go_to_4 : states)
+   | nont == num_AddExpr = parse_state18 (Loop go_to_18 : states)
+   | nont == num_MulExpr = parse_state33 (Loop go_to_33 : states)
+   | nont == num_PfxExpr = parse_state44 (Loop go_to_44 : states)
+   | nont == num_AppExpr = parse_state11 (Loop go_to_11 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+   | nont == num_ExprList = parse_state68 (Loop go_to_68 : states)
+
+go_to_31 = go_to_31
+
+go_to_32 nont states
+   | nont == num_Expr = parse_state31 (Loop go_to_31 : states)
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_RelExpr = parse_state4 (Loop go_to_4 : states)
+   | nont == num_AddExpr = parse_state18 (Loop go_to_18 : states)
+   | nont == num_MulExpr = parse_state33 (Loop go_to_33 : states)
+   | nont == num_PfxExpr = parse_state44 (Loop go_to_44 : states)
+   | nont == num_AppExpr = parse_state11 (Loop go_to_11 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+   | nont == num_ExprList = parse_state45 (Loop go_to_45 : states)
+
+go_to_33 = go_to_33
+
+go_to_34 nont states
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_PfxExpr = parse_state35 (Loop go_to_35 : states)
+   | nont == num_AppExpr = parse_state11 (Loop go_to_11 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_35 = go_to_35
+
+go_to_36 nont states
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_AppExpr = parse_state37 (Loop go_to_37 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_37 nont states
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_Atomic = parse_state12 (Loop go_to_12 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_38 nont states
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_AppExpr = parse_state39 (Loop go_to_39 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_39 nont states
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_Atomic = parse_state12 (Loop go_to_12 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_40 nont states
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_AppExpr = parse_state41 (Loop go_to_41 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_41 nont states
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_Atomic = parse_state12 (Loop go_to_12 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_42 nont states
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_AppExpr = parse_state43 (Loop go_to_43 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_43 nont states
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_Atomic = parse_state12 (Loop go_to_12 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_44 = go_to_44
+
+go_to_45 = go_to_45
+
+go_to_46 nont states
+   | nont == num_IdentList = parse_state47 (Loop go_to_47 : states)
+
+go_to_47 = go_to_47
+
+go_to_48 nont states
+   | nont == num_Expr = parse_state49 (Loop go_to_49 : states)
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_RelExpr = parse_state4 (Loop go_to_4 : states)
+   | nont == num_AddExpr = parse_state18 (Loop go_to_18 : states)
+   | nont == num_MulExpr = parse_state33 (Loop go_to_33 : states)
+   | nont == num_PfxExpr = parse_state44 (Loop go_to_44 : states)
+   | nont == num_AppExpr = parse_state11 (Loop go_to_11 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_49 = go_to_49
+
+go_to_50 nont states
+   | nont == num_Expr = parse_state51 (Loop go_to_51 : states)
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_RelExpr = parse_state4 (Loop go_to_4 : states)
+   | nont == num_AddExpr = parse_state18 (Loop go_to_18 : states)
+   | nont == num_MulExpr = parse_state33 (Loop go_to_33 : states)
+   | nont == num_PfxExpr = parse_state44 (Loop go_to_44 : states)
+   | nont == num_AppExpr = parse_state11 (Loop go_to_11 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_51 = go_to_51
+
+go_to_52 nont states
+   | nont == num_Expr = parse_state53 (Loop go_to_53 : states)
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_RelExpr = parse_state4 (Loop go_to_4 : states)
+   | nont == num_AddExpr = parse_state18 (Loop go_to_18 : states)
+   | nont == num_MulExpr = parse_state33 (Loop go_to_33 : states)
+   | nont == num_PfxExpr = parse_state44 (Loop go_to_44 : states)
+   | nont == num_AppExpr = parse_state11 (Loop go_to_11 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_53 = go_to_53
+
+go_to_54 nont states
+   | nont == num_Expr = parse_state55 (Loop go_to_55 : states)
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_RelExpr = parse_state4 (Loop go_to_4 : states)
+   | nont == num_AddExpr = parse_state18 (Loop go_to_18 : states)
+   | nont == num_MulExpr = parse_state33 (Loop go_to_33 : states)
+   | nont == num_PfxExpr = parse_state44 (Loop go_to_44 : states)
+   | nont == num_AppExpr = parse_state11 (Loop go_to_11 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_55 = go_to_55
+
+go_to_56 nont states
+   | nont == num_Decl = parse_state57 (Loop go_to_57 : states)
+   | nont == num_Decls = parse_state63 (Loop go_to_63 : states)
+
+go_to_57 = go_to_57
+
+go_to_58 nont states
+   | nont == num_Decl = parse_state57 (Loop go_to_57 : states)
+   | nont == num_Decls = parse_state59 (Loop go_to_59 : states)
+
+go_to_59 = go_to_59
+
+go_to_60 = go_to_60
+
+go_to_61 nont states
+   | nont == num_Expr = parse_state62 (Loop go_to_62 : states)
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_RelExpr = parse_state4 (Loop go_to_4 : states)
+   | nont == num_AddExpr = parse_state18 (Loop go_to_18 : states)
+   | nont == num_MulExpr = parse_state33 (Loop go_to_33 : states)
+   | nont == num_PfxExpr = parse_state44 (Loop go_to_44 : states)
+   | nont == num_AppExpr = parse_state11 (Loop go_to_11 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_62 = go_to_62
+
+go_to_63 = go_to_63
+
+go_to_64 nont states
+   | nont == num_Expr = parse_state65 (Loop go_to_65 : states)
+   | nont == num_Variable = parse_state3 (Loop go_to_3 : states)
+   | nont == num_RelExpr = parse_state4 (Loop go_to_4 : states)
+   | nont == num_AddExpr = parse_state18 (Loop go_to_18 : states)
+   | nont == num_MulExpr = parse_state33 (Loop go_to_33 : states)
+   | nont == num_PfxExpr = parse_state44 (Loop go_to_44 : states)
+   | nont == num_AppExpr = parse_state11 (Loop go_to_11 : states)
+   | nont == num_Atomic = parse_state23 (Loop go_to_23 : states)
+   | nont == num_List = parse_state13 (Loop go_to_13 : states)
+
+go_to_65 = go_to_65
+
+go_to_66 nont states
+   | nont == num_IdentList = parse_state67 (Loop go_to_67 : states)
+
+go_to_67 = go_to_67
+
+go_to_68 = go_to_68
+
+go_to_69 = go_to_69
+
+
+
+
+type Environment = (SymTab,Ident)
+   
+-- Auxiliary functions
+
+intval ('-':s) = - intval' s
+intval s       = intval' s
+intval' = foldl (\x y-> 10*x+ ord y - ord '0') 0
+
+oconcat (x1,x2) (y1,y2) = (x1++y1,x2++y2)
+
+compDecls k symTab n [] = ([],n)
+compDecls k symTab n (f:fs) =
+   let (e,n1) = f symTab n
+       (decls,n2) = compDecls (k+1) symTab n1 fs
+   in  ((Decl k e):decls,n2)
+   
+compLet symTab n (ids,exprs) f =
+   let (symTab1,n1) = pushVars symTab n ids
+       (decls,n2) = compDecls n symTab1 n1 exprs
+       (e,n3) = f symTab1 n2
+   in  (Letrec decls e,n3)
+   
+compCond symTab n f g h =
+   let (e1,n1) = f symTab n
+       (e2,n2) = g symTab n1
+       (e3,n3) = h symTab n2
+   in  (Cond e1 e2 e3,n2)
+   
+compAppl symTab n f g =
+   let (e1,n1) = f symTab n
+       (e2,n2) = g symTab n1
+       e       = flatten (Appl e1 [e2])
+   in  (e,n2)
+
+compIdent1 symTab n id = 
+   (push (id,n) symTab,n+1,[n])
+
+compIdent2 symTab n id f = 
+   let (symTab1,n1,id1) = compIdent1 symTab n id
+       (symTab2,n2,id2) = f symTab1 n1
+   in  (symTab2,n2,id1++id2)
+   
+compLam symTab n f g =
+   let (symTab1,n1,idents) = f symTab n
+       (e,n2) = g symTab1 n1
+   in  (Lambda idents e,n2)
+   
+compBinOp symTab n op f g =
+   let (e1,n1) = f symTab n
+       (e2,n2) = g symTab n1
+   in  case op of
+          "+"  -> (Plus e1 e2,n2)
+          "-"  -> (Minus e1 e2,n2)
+          "*"  -> (Mult e1 e2,n2)
+          "/"  -> (Div e1 e2,n2)
+          ":"  -> (Cons e1 e2,n2)
+          "="  -> (Equal e1 e2,n2)
+
+compUnOp symTab n op f =
+   let (e1,n1) = f symTab n
+   in  case op of
+          "head"  -> (Head e1,n1)
+          "tail"  -> (Tail e1,n1)
+          "not"   -> (Not e1,n1)
+          "isnil"   -> (IsNil e1,n1)
+          "~"     -> (Neg e1,n1)
+          
+compList symTab n [f] = 
+   let (e1,n1) = f symTab n 
+   in (List [e1],n1)
+compList symTab n (f:fs) =
+   let (e1,n1)      = f symTab n
+       (List es,n2) = compList symTab n1 fs
+   in  (List (e1:es),n2)
+   
+fetchVar symTab _ id =
+   let res = lookup symTab id
+   in  case res of  Error    -> error ("unknown identifier "++id)
+                    Succes i -> Var i
+
+pushVars symTab n []       = (symTab,n)
+pushVars symTab n (id:ids) = 
+   pushVars (push (id,n) symTab) (n+1) ids
+   
+apply_all_to [] symTab n = ([],n)
+apply_all_to (g:gs) symTab n =
+   let (e1,n1) = g symTab n
+       (es,n2) = apply_all_to gs symTab n1
+   in  (e1:es,n2)
+   
+flatten (Appl (Appl f [e1]) es) = flatten (Appl f (e1:es))
+flatten (Appl f es)             = Appl f es
+flatten _                       = error "flatten"
+
+-- Symboltable
+
+type SymTab = Stack (String,Ident)
+data Error a = Error | Succes a
+
+lookup:: SymTab -> String -> Error Ident
+lookup st id | isEmpty st           = Error
+             | (fst top) == id      = Succes (snd top)
+             | otherwise            = lookup (pop st) id
+  where top = topOf st
+
+-- Stacks: using restricted type synonyms
+
+type Stack a = [a] in emptyStack, push, pop, topOf, isEmpty
+
+emptyStack :: Stack a
+emptyStack  = []
+
+push       :: a -> Stack a -> Stack a
+push        = (:)
+
+pop        :: Stack a -> Stack a
+pop []      = error "pop: empty stack"
+pop (_:xs)  = xs
+
+topOf      :: Stack a -> a
+topOf []    = error "topOf: empty stack"
+topOf (x:_) = x
+
+isEmpty    :: Stack a -> Bool
+isEmpty     = null
+
+instance Eq a => Eq (Stack a) where
+    s1 == s2 | isEmpty s1 = isEmpty s2
+             | isEmpty s2 = isEmpty s1
+             | otherwise  = topOf s1 == topOf s2 && pop s1 == pop s2
+
+compile s = fst (parse s emptyStack 0)
+

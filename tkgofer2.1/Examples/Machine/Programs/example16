@@ -1,0 +1,3 @@
+letrec xs == 1: ys;
+       ys == 2: xs
+in xs

@@ -1,0 +1,151 @@
+----------------------------------------------------------------
+-- Readme file for TkGofer Version 2.0
+-- Koen Claessen, Ton Vullinghs, 1997
+----------------------------------------------------------------
+
+This is the readme file for TkGofer 2.0.
+Please read this file before installation.
+An installation guide can be found in Doc/install.doc.
+
+-- Requirements --
+
+To start TkGofer you should first install Tk (version 4.2
+or higher) and Tcl (version 7.6 or higher). Both packages
+can be obtained via anoymous ftp, for example from
+ftp://ftp.smli.com/pub/Tcl.
+
+TkGofer runs on any machine that runs Tcl/Tk and Gofer.
+
+----------------------------------------------------------------
+-- CONTENTS
+
+  I.   DIRECTORY STRUCTURE
+  II.  INSTALLATION
+  III. DOCUMENTATION
+  IV.  MODULES and PRELUDES
+  V.   EXAMPLES
+  VI.  MORE INFORMATION
+
+----------------------------------------------------------------
+-- I. DIRECTORY STRUCTURE
+
+The distribution contains the following directories:
+
+  Bin/                   -- location of the binaries
+  Doc/                   -- documentation
+  Examples/              -- many small and big example programs in TkGofer
+  Tcl/                   -- necessary Tcl scripts
+
+The following directories are only used during installation:
+
+  Modules/         -- sources in gofer
+  Sources/         -- sources in c
+  Skeletons/       -- file masks
+
+After installation, there will another directory:
+
+  Preludes/        -- several preludes that you can choose
+
+Then there are the following files:
+
+  readme           -- this file
+  tkgofer.install  -- install script
+
+For information on how to use the install script, see II.
+
+----------------------------------------------------------------
+-- II. INSTALLATION
+
+For help with installation, we wrote an installation guide. It
+is the document called
+
+  Doc/install.doc
+
+Please read that document carefully before installation. The install
+script tkgofer.install will be used to do the installation.
+
+----------------------------------------------------------------
+-- III. DOCUMENTATION
+
+The documentation directory contains several information providing
+documents:
+
+  Doc/install.doc        -- installation guide
+  Doc/gofer.doc          -- the Gofer readme file
+  Doc/release.notes.doc  -- the release notes for this version
+  Doc/signatures.doc     -- the signatures of all the files that the
+                            TkGofer library provides
+
+Further, it contains the help files for some scripts:
+
+  Doc/install.help       -- help for the tkgofer.install script
+  Doc/make.prelude.help  -- help for the make.prelude script
+  Doc/tkgofer.help       -- help for the tkgofer script
+
+----------------------------------------------------------------
+-- IV. MODULES and PRELUDES
+
+The libraries of TkGofer are split up in several module, each presenting
+its own functionality. During installation, several preludes will be built,
+each containing another subset of these modules.
+
+  Modules/prelude.gs          -- almost equal to the standard cc.prelude
+  Modules/guiMonad.gs         -- definition of the GUI monad
+  Modules/widget.gs           -- widget definitions
+  Modules/io.gs               -- (file) io functions
+  Modules/time.gs             -- functions dealing with time
+  Modules/concurrent.gs       -- concurrency library
+
+From these modules, the following preludes will be created during
+installation. They all contain prelude.gs and guiMonad.gs.
+
+  Preludes/tk.prelude-all     -- widget.gs time.gs io.gs concurrent.gs
+  Preludes/tk.prelude-std     -- widget.gs
+  Preludes/tk.prelude-mini    -- ()
+  Preludes/tk.prelude-conc    -- widget.gs concurrent.gs
+  Preludes/tk.prelude-noconc  -- widget.gs time.gs io.gs
+
+----------------------------------------------------------------
+-- V. EXAMPLES
+
+The example directory contains a lot of examples, divided the following main
+groups:
+
+  Examples/SmallExamples    -- examples dealing with one feature explicitly
+  Examples/ComposedWidgets  -- how to define your won widgets
+  Examples/Mvc              -- an mvc library, with separate examples
+  Examples/Animation        -- an animation library, with separate examples
+  Examples/Concurrency      -- some concurrency examples
+  Examples/Fudgets          -- a small implementation of Fudgets
+  Examples/Machine          -- an abstract machine simulator
+  Examples/Tree             -- the tree widget, with examples
+  Examples/Turtle           -- two implementations of a graphics turtle
+
+----------------------------------------------------------------
+-- VI. MORE INFORMATION
+
+More information, about changes, extensions, bugs and fixes, can be
+found in the release.notes:
+
+  Doc/release.notes.doc
+
+If you have any questions, bug reports, or other problems, please send an
+email to:
+
+  Ton Vullinghs -- ton@bach.informatik.uni-ulm.de
+  Koen Claessen -- koen@cs.chalmers.se
+
+Acknowledgements:
+
+Several people have contributed to TkGofer with their ideas and
+suggestions. We would like to thank the following people for their
+support in the development of this or earlier versions of TkGofer: 
+Thilo Schwinn, Joachim Schmidt, Wolfram Schulte and Daniel Tuijnman.
+
+Have fun!
+
+Koen Claessen
+Ton Vullinghs
+
+----------------------------------------------------------------
+-- the end.

@@ -1,0 +1,320 @@
+#!/bin/sh
+#---------------------------------------------------------------------
+#- TkGofer v. 2.0
+#- Ton Vullinghs, Koen Claessen, July 1997
+#---------------------------------------------------------------------
+#- tkgofer.install
+
+Root="`pwd`"
+cd "$Root"
+
+#---------------------------------------------------------------------
+#- Firstly, set these variables!
+#---------------------------------------------------------------------
+
+#- Location of standard libraries
+LibStd="/usr/lib"
+
+#- Location of `libtcl.a' and Tcl include files
+LibTcl="/usr/local/lib"
+IncTcl="/usr/local/include"
+	
+#- Location of `libtk.a' and Tk include files
+LibTk="$LibTcl"
+IncTk="$IncTcl"			
+
+#- Location of `libX11.so.?' and X11 include files
+LibX11="/usr/lib"
+IncX11="/usr/openwin/include"
+
+#- Architecture Settings
+
+Architecture="SOLARIS"
+	# Choose from: TURBOC, BCC, WATCOM, ZTC, DJGPP, OS2,
+	#   SUNOS, MIPS, NEXTSTEP, NEXTGCC, MINIX68K,
+	#   AMIGA, HPUX, LINUX, RISCOS, ALPHA, SVR4, ULTRIX,
+	#   AIX, ATARI, SGI4, NETBSD, SOLARIS, GNUWIN32
+
+ArchMult="no"
+	# "yes" = install for multiple architectures (renames executables)
+	# "no" = install for just one architecture
+
+ArchCmd="arch"
+	# The unix command that prints the architecture
+	# (Only needed when ArchMult="yes")
+
+#- Various Compiler Flags
+
+LibFlags="-L$LibStd -L$LibTcl -L$LibTk -L$LibX11"
+IncFlags="-I$IncTcl -I$IncTk -I$IncX11"
+LinkFlags="-ltk4.2 -ltcl7.6 -lX11 -lm -ldl -lsocket -lnsl"
+
+#- Compiler
+
+Compiler="gcc"
+CompilerFlags=""
+
+#---------------------------------------------------------------------
+#- Derived variables -- Don't change
+
+SkeletonDir="$Root/Skeletons"
+SourceDir="$Root/Sources"
+PreludeDir="$Root/Preludes"
+BinDir="$Root/Bin"
+HelpDir="$Root/Doc"
+InstallDir="$Root/Bin"
+
+if [ "$ArchMult" = "no" ]
+then
+  ExeExtension="exe"
+else
+  Quote='`'
+  ExeExtension="${Quote}$ArchCmd${Quote}"
+fi
+
+#---------------------------------------------------------------------
+#- Help?
+
+if [ "$1" = "-?" -o "$1" = "-help" ]
+then
+  more "$HelpDir/install.help"
+  exit
+fi
+
+#---------------------------------------------------------------------
+#- Check Arguments
+
+JobMake="no"
+JobInstall="no"
+JobPreludes="no"
+JobClean="no"
+
+if [ "$1" = "" ]
+then
+  JobMake="yes"
+  JobInstall="yes"
+  JobPreludes="yes"
+else
+  while [ "$1" != "" ]
+  do
+    if [ "$1" = "-clean" ]
+    then
+      JobClean="yes"
+    else if [ "$1" = "-make" ]
+    then
+      JobMake="yes"
+    else if [ "$1" = "-install" ]
+    then
+      JobInstall="yes"
+    else if [ "$1" = "-preludes" ]
+    then
+      JobPreludes="always"
+    else if [ "$1" = "-nothing" ]
+    then
+      JobMake="no"
+      JobInstall="no"
+      JobPreludes="no"
+      JobClean="no"
+    fi; fi; fi; fi; fi
+    shift
+  done
+fi
+
+#---------------------------------------------------------------------
+#- Functions
+
+stopIt()
+{
+  echo "TkGofer Install stopped."
+  exit
+}
+
+valueOf()
+{
+  export $1
+  echo "echo $""$1" | sh
+}
+
+notEmpty()
+{
+  while [ "$1" != "" ]
+  do
+    if [ "`valueOf $1`" = "" ]
+    then
+      echo "Error: Variable $1 undefined."
+      echo "  Please edit the file and set the"
+      echo "  listed variables to the right values."
+      stopIt
+    fi
+    shift
+  done
+}
+
+architectureChanged()
+{
+  if [ -f "$SourceDir/prelude.h" ]
+  then
+    if grep "Arch is now $Architecture" "$SourceDir/prelude.h" > /dev/null
+    then
+      echo "no"
+    else
+      echo "yes"
+    fi
+  else
+    echo "yes"
+  fi
+}
+
+create()
+{
+  Skeleton="$SkeletonDir/$1.skel"
+  File="$2/$1"
+  Mod="$3"
+  echo "  $1"
+  shift; shift; shift
+
+  SedCmds=""
+  while [ "$1" != "" ]
+  do
+    Value=`valueOf $1`
+    SedCmds="$SedCmds
+             s!@$1@!$Value!g"
+    shift
+  done
+
+  rm -f $File
+  cat "$Skeleton" | sed "$SedCmds" > "$File"
+  chmod "a+$Mod" "$File" 
+}
+
+#---------------------------------------------------------------------
+#- Clean up?
+
+if [ "$JobClean" = "yes" ]
+then
+  echo "Cleaning up ..."
+  cd "$BinDir"
+  rm tkgofer make.prelude tkgofer.* 2> /dev/null
+  cd "$SourceDir"
+  rm Makefile prelude.h 2> /dev/null
+  rm *.o 2> /dev/null
+  cd "$Root"
+  rm -R "$PreludeDir" 2> /dev/null
+  echo "Done."
+  exit
+fi
+
+#---------------------------------------------------------------------
+#- Check Variables
+
+echo "Checking Variables ..."
+
+notEmpty \
+  Root InstallDir \
+  LibStd LibTcl IncTcl LibTk IncTk LibX11 IncX11 \
+  LibFlags IncFlags LinkFlags Compiler \
+  Architecture ArchMult
+
+#---------------------------------------------------------------------
+#- Create Files from Skeletons
+
+echo "Creating files from skeletons ..."
+
+create Makefile "$SourceDir" r \
+  InstallDir \
+  LibFlags IncFlags LinkFlags \
+  Compiler CompilerFlags
+
+create tkgofer "$BinDir" rx \
+  Root ExeExtension
+
+create make.prelude "$BinDir" rx \
+  Root
+
+if [ "`architectureChanged`" = "yes" ]
+then
+  create prelude.h "$SourceDir" r \
+    Architecture
+fi
+
+#---------------------------------------------------------------------
+#- Compile Executable
+
+if [ "$JobMake" = "yes" ]
+then
+  echo "Making ..."
+  cd "$SourceDir"
+
+  if make
+  then
+    chmod a+rx tkgofer.exe
+  else
+    echo "Error: make had errors."
+    stopIt
+  fi
+  
+  cd "$Root"
+fi
+
+#---------------------------------------------------------------------
+#- Install Executable
+
+if [ "$JobInstall" = "yes" ]
+then
+  echo "Installing Executable ..."
+  cd "$SourceDir"
+
+  if [ -f tkgofer.exe ]
+  then
+    if [ "$ArchMult" = "yes" ]
+    then
+      mv tkgofer.exe "$InstallDir/tkgofer.`$ArchCmd`"
+      echo "  This executable is called tkgofer.`$ArchCmd`."
+      echo "  You can now execute tkgofer.install on other architectures as well."
+    else
+      mv tkgofer.exe "$InstallDir"
+    fi
+
+    chmod a+x $InstallDir/*
+  else
+    echo "Error: no tkgofer.exe"
+    stopIt
+  fi
+  
+  cd "$Root"
+fi
+
+#---------------------------------------------------------------------
+#- Make Preludes
+
+if [ "$JobPreludes" != "no" ]
+then
+  if [ "$JobPreludes" = "always" -a -d "$PreludeDir" ]
+  then
+    rm -R "$PreludeDir"
+  fi
+
+  if [ ! -d "$PreludeDir"  ]
+  then
+    echo "Creating Preludes ..."
+
+    mkdir "$PreludeDir"
+    chmod a+rx "$PreludeDir"
+
+    "$BinDir/make.prelude" -all
+    chmod a+r "$PreludeDir"/*
+  else
+    echo "Preludes were already created."
+  fi
+fi
+
+#---------------------------------------------------------------------
+#- Done
+
+echo "Done."
+
+#---------------------------------------------------------------------
+#- the end.
+
+
+

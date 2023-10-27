@@ -1,0 +1,69 @@
+type Ident = Int
+data Value = Integer Int | Boolean Bool
+
+data Expr = Basic Value | Var Ident | 
+            Not Expr | Neg Expr |
+            Plus Expr Expr | Minus Expr Expr | Mult Expr Expr | Div Expr Expr |
+            Equal Expr Expr | And Expr Expr | Or Expr Expr |
+            Cond Expr Expr Expr | Appl Expr [Expr] | Lambda [Ident] Expr |
+            Letrec Decls Expr | Head Expr | Tail Expr | Cons Expr Expr | 
+            IsNil Expr | List [Expr]
+            
+              
+type Decls = [Decl] 
+data Decl  = Decl Ident Expr
+
+-- Abstract data type: Set -------------------------------------
+
+type Set a = [a]
+
+iselem :: Eq a => a -> Set a -> Bool
+iselem x s = x `elem` s
+
+union :: Eq a => Set a -> Set a -> Set a
+union x y = nub(x ++ y) 
+
+intersect :: Eq a => Set a -> Set a -> Set a
+intersect [] ys = []
+intersect xs [] = []
+intersect (x:xs) ys | x `iselem` ys    = x:(intersect xs ys)
+                    | otherwise        = intersect xs ys
+
+lamadelete :: Eq a => Set a -> Set a -> Set a
+lamadelete xs ys = xs \\ ys   
+
+--------------------------------------------------------------------    
+   
+free :: Expr -> Set Ident
+free (Basic b)       = []
+free (Var x)         = [x]
+free (Not e)         = free e
+free (Plus e1 e2)    = free e1 `union` free e2 
+free (Minus e1 e2)   = free e1 `union` free e2 
+free (Mult e1 e2)    = free e1 `union` free e2 
+free (Div e1 e2)     = free e1 `union` free e2                       
+free (Equal e1 e2)   = free e1 `union` free e2
+free (Cond e1 e2 e3) = ((free e1) `union` (free e2)) `union` (free e3)
+free (Appl e1 es)    = (free e1) `union` (free_list es)
+free (Lambda is e)   = (free e) `lamadelete` is 
+free (Letrec ds e)   = ((free e) `union` (free' ds)) `lamadelete` (locals ds)
+free (Head e)        = free e
+free (IsNil e)       = free e
+free (Tail e)        = free e
+free (Cons e1 e2)    = (free e1) `union` (free e2)
+free (List es)       = free_list es
+
+free':: Decls -> Set Ident
+free' [] = []
+free' ((Decl x e):ds) = (free e) `union` (free' ds)  
+
+free_list:: [Expr] -> Set Ident
+free_list [] = []
+free_list (e:es) = (free e) `union` (free_list es)
+
+locals:: Decls -> Set Ident
+locals [] = []
+locals ((Decl x e):ds) = [x] `union` (locals ds)
+
+definitions [] = []
+definitions ((Decl x e):ds) = e:(definitions ds)

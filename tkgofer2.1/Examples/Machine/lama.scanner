@@ -1,0 +1,1609 @@
+letrecT = 1
+inT = 2
+ifT = 3
+fiT = 4
+thenT = 5
+elseT = 6
+equals = 7
+andT = 8
+orT = 9
+notT = 10
+consT = 11
+nilT = 12
+isNilT = 13
+headT = 14
+tailT = 15
+lbra = 16
+rbra = 17
+plus = 18
+minus = 19
+negT = 20
+times = 21
+divide = 22
+lpar = 23
+rpar = 24
+is = 25
+lambda = 26
+dot = 27
+semic = 28
+comma = 29
+integer = 30
+trueT = 31
+falseT = 32
+ident = 33
+
+scan s
+  = scan0 s "" "" 1
+  where
+    scan0 "" s0 s1 line = []
+    scan0 s@(c:s') s0 s1 line
+     =
+     let {
+      reduce = if isSpace c then scan0 s' s0 (c:s1) (if c=='\n' then line+1 else line)
+               else error ("Lexical error in line " ++ show line ++ " at\n"++ head (lines s))}
+     in
+      if c>='a'
+       then if c>='l'
+       then if c>='p'
+       then if c>='u'
+       then if c>='~'
+       then if c<='~'
+       then (20,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else reduce
+       else if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='t'
+       then match_regexp_2 s' (c:s0) s1 line
+       else match_regexp_14 s' (c:s0) s1 line
+       else if c>='n'
+       then if c>='o'
+       then match_regexp_3 s' (c:s0) s1 line
+       else match_regexp_4 s' (c:s0) s1 line
+       else if c>='m'
+       then match_regexp_14 s' (c:s0) s1 line
+       else match_regexp_5 s' (c:s0) s1 line
+       else if c>='g'
+       then if c>='i'
+       then if c>='j'
+       then match_regexp_14 s' (c:s0) s1 line
+       else match_regexp_6 s' (c:s0) s1 line
+       else if c>='h'
+       then match_regexp_7 s' (c:s0) s1 line
+       else match_regexp_14 s' (c:s0) s1 line
+       else if c>='e'
+       then if c>='f'
+       then match_regexp_8 s' (c:s0) s1 line
+       else match_regexp_9 s' (c:s0) s1 line
+       else if c>='b'
+       then match_regexp_14 s' (c:s0) s1 line
+       else match_regexp_10 s' (c:s0) s1 line
+       else if c>='0'
+       then if c>='A'
+       then if c>='\\'
+       then if c>=']'
+       then if c<=']'
+       then (17,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else reduce
+       else (26,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else if c>='['
+       then match_regexp_13 s' (c:s0) s1 line
+       else match_regexp_14 s' (c:s0) s1 line
+       else if c>=';'
+       then if c>='='
+       then if c<='='
+       then match_regexp_15 s' (c:s0) s1 line
+       else reduce
+       else if c<=';'
+       then (28,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else reduce
+       else if c>=':'
+       then (11,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else match_regexp_18 s' (c:s0) s1 line
+       else if c>=','
+       then if c>='.'
+       then if c>='/'
+       then (22,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else (27,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else if c>='-'
+       then match_regexp_21 s' (c:s0) s1 line
+       else (29,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else if c>='*'
+       then if c>='+'
+       then (18,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else (21,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else if c>=')'
+       then (24,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else if c>='('
+       then (23,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else reduce
+
+    match_regexp_0 "" s0 s1 line
+      = error ("Lexical error in line " ++ show line ++ " at END")
+    match_regexp_0 s@(c:s') s0 s1 line
+     = let {
+      reduce = error ("Lexical error in line " ++ show line ++ " at\n"++ head (lines s))}
+     in
+      if c>='a'
+       then if c>='l'
+       then if c>='p'
+       then if c>='u'
+       then if c>='~'
+       then if c<='~'
+       then (20,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else reduce
+       else if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='t'
+       then match_regexp_2 s' (c:s0) s1 line
+       else match_regexp_14 s' (c:s0) s1 line
+       else if c>='n'
+       then if c>='o'
+       then match_regexp_3 s' (c:s0) s1 line
+       else match_regexp_4 s' (c:s0) s1 line
+       else if c>='m'
+       then match_regexp_14 s' (c:s0) s1 line
+       else match_regexp_5 s' (c:s0) s1 line
+       else if c>='g'
+       then if c>='i'
+       then if c>='j'
+       then match_regexp_14 s' (c:s0) s1 line
+       else match_regexp_6 s' (c:s0) s1 line
+       else if c>='h'
+       then match_regexp_7 s' (c:s0) s1 line
+       else match_regexp_14 s' (c:s0) s1 line
+       else if c>='e'
+       then if c>='f'
+       then match_regexp_8 s' (c:s0) s1 line
+       else match_regexp_9 s' (c:s0) s1 line
+       else if c>='b'
+       then match_regexp_14 s' (c:s0) s1 line
+       else match_regexp_10 s' (c:s0) s1 line
+       else if c>='0'
+       then if c>='A'
+       then if c>='\\'
+       then if c>=']'
+       then if c<=']'
+       then (17,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else reduce
+       else (26,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else if c>='['
+       then match_regexp_13 s' (c:s0) s1 line
+       else match_regexp_14 s' (c:s0) s1 line
+       else if c>=';'
+       then if c>='='
+       then if c<='='
+       then match_regexp_15 s' (c:s0) s1 line
+       else reduce
+       else if c<=';'
+       then (28,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else reduce
+       else if c>=':'
+       then (11,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else match_regexp_18 s' (c:s0) s1 line
+       else if c>=','
+       then if c>='.'
+       then if c>='/'
+       then (22,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else (27,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else if c>='-'
+       then match_regexp_21 s' (c:s0) s1 line
+       else (29,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else if c>='*'
+       then if c>='+'
+       then (18,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else (21,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else if c>=')'
+       then (24,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else if c>='('
+       then (23,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else reduce
+
+
+    match_regexp_2 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_2 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='b'
+       then if c>='i'
+       then if c>='r'
+       then if c>='s'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_27 s' (c:s0) s1 line
+       else match_regexp_14 s' (c:s0) s1 line
+       else if c>='h'
+       then match_regexp_28 s' (c:s0) s1 line
+       else match_regexp_14 s' (c:s0) s1 line
+       else if c>='A'
+       then if c>='_'
+       then if c>='a'
+       then match_regexp_29 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_3 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_3 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='r'
+       then if c>='s'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_30 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_4 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_4 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='o'
+       then if c>='p'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_31 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_5 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_5 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='e'
+       then if c>='f'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_32 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_6 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_6 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='f'
+       then if c>='o'
+       then if c>='s'
+       then if c>='t'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_33 s' (c:s0) s1 line
+       else match_regexp_14 s' (c:s0) s1 line
+       else if c>='g'
+       then if c>='n'
+       then match_regexp_34 s' (c:s0) s1 line
+       else match_regexp_14 s' (c:s0) s1 line
+       else match_regexp_35 s' (c:s0) s1 line
+       else if c>='A'
+       then if c>='_'
+       then if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_7 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_7 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='e'
+       then if c>='f'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_36 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_8 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_8 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='a'
+       then if c>='i'
+       then if c>='j'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_37 s' (c:s0) s1 line
+       else if c>='b'
+       then match_regexp_14 s' (c:s0) s1 line
+       else match_regexp_38 s' (c:s0) s1 line
+       else if c>='A'
+       then if c>='_'
+       then if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_9 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_9 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='l'
+       then if c>='m'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_39 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_10 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_10 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='n'
+       then if c>='o'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_40 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+
+
+    match_regexp_13 "" s0 s1 line
+      = [(16,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_13 s@(c:s') s0 s1 line
+     = let {
+      reduce = (16,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c==']'
+       then (12,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else reduce
+
+    match_regexp_14 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_14 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='A'
+       then if c>='_'
+       then if c>='a'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_15 "" s0 s1 line
+      = [(7,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_15 s@(c:s') s0 s1 line
+     = let {
+      reduce = (7,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c=='='
+       then (25,reverse (c:s0),(line,reverse s1 ++ reverse (c:s0))): scan0 s' "" "" line
+       else reduce
+
+
+
+    match_regexp_18 "" s0 s1 line
+      = [(30,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_18 s@(c:s') s0 s1 line
+     = let {
+      reduce = (30,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='0' && c<='9'
+       then match_regexp_18 s' (c:s0) s1 line
+       else reduce
+
+
+
+    match_regexp_21 "" s0 s1 line
+      = [(19,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_21 s@(c:s') s0 s1 line
+     = let {
+      reduce = (19,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c=='-'
+       then match_regexp_43 s' (c:s0) s1 line
+       else reduce
+
+
+
+
+
+
+    match_regexp_27 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_27 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='u'
+       then if c>='v'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_44 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_28 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_28 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='e'
+       then if c>='f'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_45 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_29 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_29 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='i'
+       then if c>='j'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_46 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_30 "" s0 s1 line
+      = [(9,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_30 s@(c:s') s0 s1 line
+     = let {
+      reduce = (9,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='A'
+       then if c>='_'
+       then if c>='a'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_31 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_31 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='t'
+       then if c>='u'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_47 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_32 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_32 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='t'
+       then if c>='u'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_48 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_33 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_33 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='n'
+       then if c>='o'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_49 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_34 "" s0 s1 line
+      = [(2,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_34 s@(c:s') s0 s1 line
+     = let {
+      reduce = (2,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='A'
+       then if c>='_'
+       then if c>='a'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_35 "" s0 s1 line
+      = [(3,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_35 s@(c:s') s0 s1 line
+     = let {
+      reduce = (3,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='A'
+       then if c>='_'
+       then if c>='a'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_36 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_36 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='a'
+       then if c>='b'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_50 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_37 "" s0 s1 line
+      = [(4,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_37 s@(c:s') s0 s1 line
+     = let {
+      reduce = (4,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='A'
+       then if c>='_'
+       then if c>='a'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_38 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_38 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='l'
+       then if c>='m'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_51 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_39 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_39 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='s'
+       then if c>='t'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_52 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_40 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_40 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='d'
+       then if c>='e'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_53 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+
+
+    match_regexp_43 "" s0 s1 line
+      = error ("Lexical error in line " ++ show line ++ " at END")
+    match_regexp_43 s@(c:s') s0 s1 line
+     = let {
+      reduce = error ("Lexical error in line " ++ show line ++ " at\n"++ head (lines s))}
+     in
+      if c>='\n'
+       then if c>=' '
+       then match_regexp_43 s' (c:s0) s1 line
+       else if c<='\n'
+       then scan0 s' "" (c:s0++s1) (line+1)
+       else reduce
+       else if c>='\t'
+       then match_regexp_43 s' (c:s0) s1 line
+       else if c>='\b'
+       then match_regexp_43 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_44 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_44 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='e'
+       then if c>='f'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_55 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_45 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_45 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='n'
+       then if c>='o'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_56 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_46 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_46 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='l'
+       then if c>='m'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_57 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_47 "" s0 s1 line
+      = [(10,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_47 s@(c:s') s0 s1 line
+     = let {
+      reduce = (10,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='A'
+       then if c>='_'
+       then if c>='a'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_48 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_48 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='r'
+       then if c>='s'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_58 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_49 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_49 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='i'
+       then if c>='j'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_59 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_50 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_50 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='d'
+       then if c>='e'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_60 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_51 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_51 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='s'
+       then if c>='t'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_61 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_52 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_52 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='e'
+       then if c>='f'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_62 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_53 "" s0 s1 line
+      = [(8,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_53 s@(c:s') s0 s1 line
+     = let {
+      reduce = (8,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='A'
+       then if c>='_'
+       then if c>='a'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+
+    match_regexp_55 "" s0 s1 line
+      = [(31,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_55 s@(c:s') s0 s1 line
+     = let {
+      reduce = (31,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='A'
+       then if c>='_'
+       then if c>='a'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_56 "" s0 s1 line
+      = [(5,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_56 s@(c:s') s0 s1 line
+     = let {
+      reduce = (5,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='A'
+       then if c>='_'
+       then if c>='a'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_57 "" s0 s1 line
+      = [(15,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_57 s@(c:s') s0 s1 line
+     = let {
+      reduce = (15,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='A'
+       then if c>='_'
+       then if c>='a'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_58 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_58 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='e'
+       then if c>='f'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_63 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_59 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_59 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='l'
+       then if c>='m'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_64 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_60 "" s0 s1 line
+      = [(14,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_60 s@(c:s') s0 s1 line
+     = let {
+      reduce = (14,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='A'
+       then if c>='_'
+       then if c>='a'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_61 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_61 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='e'
+       then if c>='f'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_65 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_62 "" s0 s1 line
+      = [(6,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_62 s@(c:s') s0 s1 line
+     = let {
+      reduce = (6,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='A'
+       then if c>='_'
+       then if c>='a'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_63 "" s0 s1 line
+      = [(33,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_63 s@(c:s') s0 s1 line
+     = let {
+      reduce = (33,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='_'
+       then if c>='c'
+       then if c>='d'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else match_regexp_66 s' (c:s0) s1 line
+       else if c>='a'
+       then match_regexp_14 s' (c:s0) s1 line
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c>='A'
+       then if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_64 "" s0 s1 line
+      = [(13,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_64 s@(c:s') s0 s1 line
+     = let {
+      reduce = (13,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='A'
+       then if c>='_'
+       then if c>='a'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_65 "" s0 s1 line
+      = [(32,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_65 s@(c:s') s0 s1 line
+     = let {
+      reduce = (32,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='A'
+       then if c>='_'
+       then if c>='a'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+
+    match_regexp_66 "" s0 s1 line
+      = [(1,reverse s0,(line,reverse s1 ++ reverse s0))]
+    match_regexp_66 s@(c:s') s0 s1 line
+     = let {
+      reduce = (1,reverse s0,(line,reverse s1 ++ reverse s0)): scan0 s "" "" line}
+     in
+      if c>='A'
+       then if c>='_'
+       then if c>='a'
+       then if c<='z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='_'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c<='Z'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c>='0'
+       then if c<='9'
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+       else if c=='\''
+       then match_regexp_14 s' (c:s0) s1 line
+       else reduce
+

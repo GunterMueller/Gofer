@@ -1,0 +1,77 @@
+#!/bin/sh
+#---------------------------------------------------------------------
+#- TkGofer v. 2.0
+#- Ton Vullinghs, Koen Claessen, July 1997
+#---------------------------------------------------------------------
+#- make prelude
+
+ROOT="/home/joachim/TkGofer2.1"
+
+#---------------------------------------------------------------------
+#- Variables
+
+CurrentDir="`pwd`"
+ModuleDir="$ROOT/Modules"
+PreludeDir="$ROOT/Preludes"
+HelpDir="$ROOT/Doc"
+DefFiles="prelude.gs guiMonad.gs"
+Files=""
+MyName="$0"
+
+#---------------------------------------------------------------------
+#- Help?
+
+if [ "$1" = "-?" -o "$1" = "-help" ]
+then
+  more "$HelpDir/make.prelude.help"
+  exit
+fi
+
+#---------------------------------------------------------------------
+#- All?
+
+if [ "$1" = "-all" ]
+then
+  $MyName                     > $PreludeDir/tk.prelude-mini
+  $MyName widget              > $PreludeDir/tk.prelude-std
+  $MyName widget time io      > $PreludeDir/tk.prelude-noconc
+  $MyName widget         conc > $PreludeDir/tk.prelude-conc
+  $MyName widget time io conc > $PreludeDir/tk.prelude-all
+  exit
+fi
+
+#---------------------------------------------------------------------
+#- Options
+
+while [ "$1" != "" ]
+do
+  Files="$Files `ls $ModuleDir | grep $1 | head -1`"
+  shift
+done
+
+#---------------------------------------------------------------------
+#- Create!
+
+cd $ModuleDir
+
+echo "-- ===================================================================" 
+echo "-- TkGofer Prelude"                                                         
+echo "-- Created on `date` by `whoami`." 2> /dev/null
+echo "-- ===================================================================" 
+echo "" 
+echo "-- this prelude uses:$Files --"
+echo ""
+
+cat $DefFiles $Files 
+
+echo "" 
+echo "-- ===================================================================" 
+echo "-- the end."                                                            
+
+cd $Current
+
+#---------------------------------------------------------------------
+#- the end.
+
+
+    

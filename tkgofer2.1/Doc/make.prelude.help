@@ -1,0 +1,13 @@
+Prelude Maker of TkGofer, version 2.0. July 1997.
+
+usage: make.prelude [ options ... ]
+       where options include:
+
+       -help         to display this message.
+       -?            to display this message.
+ 
+       -all          to create all preludes in the directory Preludes.
+
+       <keyword1> <keyword2> ...
+                     prints a prelude on the stdout, using the modules
+                     specified by the keywords: widget, conc, io, or time.
